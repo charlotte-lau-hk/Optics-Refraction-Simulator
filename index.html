@@ -157,7 +157,7 @@
       display: flex;
       flex: 1;
       width: 100%;
-      max-width: 1800px;
+      max-width: 1920px;
       margin: 0 auto;
       padding: 0.75rem;
       gap: 0.75rem;
@@ -237,23 +237,17 @@
       font-weight: 600;
       align-items: center;
       gap: 0.5rem;
-      animation: fadeIn 0.3s ease;
     }
 
     .unlock-banner.visible {
       display: flex;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* SVG Container */
+    /* SVG Container - Scales responsively to fill available whiteboard/screen area */
     .svg-container {
       width: 100%;
       flex: 1;
-      min-height: 360px;
+      min-height: 380px;
       background: #ffffff;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
@@ -267,7 +261,7 @@
     #optics-svg {
       width: 100%;
       height: 100%;
-      max-height: 70vh;
+      max-height: 72vh;
       display: block;
       user-select: none;
     }
@@ -343,7 +337,6 @@
       flex-direction: column;
       overflow: hidden;
       box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-      transition: width 0.2s ease;
     }
 
     .side-panel.collapsed {
@@ -417,12 +410,12 @@
 
     .layer-count-btns {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.5rem;
     }
 
     .layer-count-btn {
       flex: 1;
-      padding: 0.45rem;
+      padding: 0.5rem;
       font-weight: 700;
     }
 
@@ -488,14 +481,14 @@
     .preset-group {
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.45rem;
     }
 
     .preset-btn {
       text-align: left;
       justify-content: flex-start;
       font-size: 0.88rem;
-      padding: 0.45rem 0.65rem;
+      padding: 0.5rem 0.65rem;
       white-space: normal;
       line-height: 1.35;
     }
@@ -560,8 +553,8 @@
       padding: 0.75rem;
       border-radius: 8px;
       text-align: center;
-      font-size: 0.9rem;
       font-weight: 600;
+      font-size: 0.9rem;
     }
 
     .tir-tag {
@@ -619,7 +612,7 @@
         max-height: 55vh;
       }
       .svg-container {
-        min-height: 290px;
+        min-height: 300px;
       }
     }
 
@@ -693,7 +686,7 @@
         </div>
         <div class="status-pill" id="status-pill">
           <span id="status-icon">⚙️</span>
-          <span id="status-text">Setup Mode (Select media & angle, then click "Start" to lock & predict)</span>
+          <span id="status-text">Setup Mode (Select media &amp; angle, then click "Start")</span>
         </div>
       </div>
 
@@ -703,8 +696,8 @@
         <span id="ui-unlock-msg">Full ray path revealed! You can now drag the incident angle slider to dynamically observe the ray path and Total Internal Reflection (TIR), or click "Reset" for a new question.</span>
       </div>
 
-      <!-- Inline SVG Canvas -->
-      <div class="svg-container">
+      <!-- Inline SVG Canvas with viewBox scaling -->
+      <div class="svg-container" id="svg-scroll-container">
         <svg id="optics-svg" viewBox="0 0 920 520" preserveAspectRatio="xMidYMid meet" aria-label="Optics Ray Diagram"></svg>
       </div>
 
@@ -747,10 +740,10 @@
     <aside class="side-panel" id="side-panel">
       <div class="tab-header">
         <button type="button" class="tab-btn active" id="tab-btn-settings" onclick="switchTab('settings')">
-          ⚙️ <span id="ui-tab-settings">Media & Angle Setup</span>
+          ⚙️ <span id="ui-tab-settings">Media &amp; Angle Setup</span>
         </button>
         <button type="button" class="tab-btn" id="tab-btn-formulas" onclick="switchTab('formulas')">
-          📐 <span id="ui-tab-formulas">Formulas & Critical Angles</span>
+          📐 <span id="ui-tab-formulas">Formulas &amp; Critical Angles</span>
         </button>
       </div>
 
@@ -782,13 +775,13 @@
           </div>
           <div class="preset-group">
             <button type="button" class="btn preset-btn" id="preset-1" onclick="applyPreset(1)">
-              1. Intermediate Layer Does Not Affect Final Angle (Air → Water → Glass, 40°)
+              1. Intermediate Layer Invariance (Air → Water → Glass, 40°)
             </button>
             <button type="button" class="btn preset-btn" id="preset-2" onclick="applyPreset(2)">
               2. Parallel Glass Slab (Air → Glass → Air, 40°)
             </button>
             <button type="button" class="btn preset-btn" id="preset-3" onclick="applyPreset(3)">
-              3. Dense to Less Dense Triggers TIR (Glass → Water → Air, 42°)
+              3. Dense to Less Dense TIR (Glass → Water → Air, 42°)
             </button>
           </div>
         </div>
@@ -807,12 +800,12 @@
         </div>
 
         <div class="formula-box">
-          <div class="section-title" id="ui-crit-title">Total Internal Reflection & Critical Angle</div>
+          <div class="section-title" id="ui-crit-title">Total Internal Reflection &amp; Critical Angle</div>
           <div class="formula-equation">
             sin <span class="phys-sym">c</span> = <span class="phys-sym">n</span>₂ / <span class="phys-sym">n</span>₁ &nbsp; (<span class="phys-sym">n</span>₁ &gt; <span class="phys-sym">n</span>₂)
           </div>
           <div style="font-size:0.86rem; color:var(--text-muted);" id="ui-crit-desc">
-            When light travels from an optically denser medium (larger n) to a less dense medium (smaller n) with incident angle θ > c, Total Internal Reflection (TIR) occurs.
+            When light travels from an optically denser medium (larger n) to a less dense medium (smaller n) with incident angle θ &gt; c, Total Internal Reflection (TIR) occurs.
           </div>
         </div>
 
@@ -826,7 +819,7 @@
 
   <script>
     // =========================================================================
-    // 1. Dictionary & Media Data (Pure Bilingual Support: zh-HK or en)
+    // 1. Dictionary & Media Data (Pure Bilingual Support: en or zh-HK)
     // =========================================================================
     const MEDIA_CATALOG = [
       { id: 'air',     n: 1.00, zh: '空氣',     en: 'Air',     fill: '#f8fafc', badgeBg: '#e2e8f0' },
@@ -861,19 +854,19 @@
         layerCountUnit: (num) => `${num} 層`,
         mediaSelectTitle: '各層介質選擇（由上至下）',
         layerName: (idx) => `第 ${idx} 層`,
-        thinnerLayerNote: '（為完整顯示光路，此層畫得較薄）',
+        thinLayerNote: '（為完整顯示光路，此層畫得較薄）',
         presetsTitle: '課堂常用探究情境（一鍵套用）',
         preset1: '1. 中間層不影響最終折射角（空氣 → 水 → 玻璃，40°）',
         preset2: '2. 平行玻璃磚（空氣 → 玻璃 → 空氣，40°）',
         preset3: '3. 光密入光疏觸發全內反射（玻璃 → 水 → 空氣，42°）',
         snellTitle: '斯涅爾定律',
-        snellDesc: '在多層平行介質中，相鄰界面的折射角與下一界面的入射角相等（內錯角相等），因此最終折射角與首層滿足 n₁ sinθ₁ = nₖ sinθₖ。',
+        snellDesc: '在多層平行介質中，相鄰界面的折射角與下一界面的入射角相等（內錯角相等），因此 n₁ sinθ₁ = nₖ sinθₖ。',
         critTitle: '全內反射與臨界角公式',
         critDesc: '當光線由光密介質（較大 n）射向光疏介質（較小 n）且入射角大於臨界角 c 時，會觸發全內反射（TIR）。',
-        calcListTitle: '已揭曉界面的臨界角與計算結果',
+        calcListTitle: '已揭曉界面之臨界角與計算結果',
         interfaceTitle: (i, j) => `界面 ${i}–${j}（第 ${i} 層 → 第 ${j} 層）`,
         interfaceReturnTitle: (i, j) => `折返界面 ${i}–${j}（第 ${i} 層 → 第 ${j} 層）`,
-        noRevealedCardsHint: '尚未揭曉任何界面。請按「開始」及「下一步」逐步驗證並解鎖計算結果。',
+        noRevealedCardsHint: '尚未揭曉任何界面數據 — 請按「開始」並點擊「下一步」逐段驗證光路。',
         critAngleLabel: '臨界角',
         noCritAngle: '不適用（光疏 → 光密，不會發生全內反射）',
         incAngleLabel: '入射角',
@@ -884,8 +877,8 @@
         svgPendingHint: '已設定初始參數 — 請按上方「開始」鎖定參數並逐步驗證光路',
         svgStepPrompt: '請預測下一段光路，再按「下一步」核對',
         svgTirLabel: '全內反射 (TIR)',
-        svgContinuesInLayer: (n) => `在第 ${n} 層繼續前進`,
-        svgReturnsToLayer1: '返回第 1 層，角度等於入射角 θ₁'
+        svgContinueLayer: (n) => `在第 ${n} 層繼續前進`,
+        svgReturnLayer1: '返回第 1 層，角度等於入射角 θ₁'
       },
       en: {
         title: 'Optics Refraction Simulator (Multi-layer Media)',
@@ -911,11 +904,11 @@
         layerCountUnit: (num) => `${num} Layers`,
         mediaSelectTitle: 'Media Selection (Top to Bottom)',
         layerName: (idx) => `Layer ${idx}`,
-        thinnerLayerNote: '(drawn thinner to fit the ray path)',
+        thinLayerNote: '(drawn thinner to fit the ray path)',
         presetsTitle: 'Quick Teaching Presets',
-        preset1: '1. Intermediate Layer Does Not Affect Final Angle (Air → Water → Glass, 40°)',
+        preset1: '1. Intermediate Layer Invariance (Air → Water → Glass, 40°)',
         preset2: '2. Parallel Glass Slab (Air → Glass → Air, 40°)',
-        preset3: '3. Dense to Less Dense Triggers TIR (Glass → Water → Air, 42°)',
+        preset3: '3. Dense to Less Dense TIR (Glass → Water → Air, 42°)',
         snellTitle: "Snell's Law",
         snellDesc: 'In parallel layers, the angle of refraction at one boundary equals the angle of incidence at the next boundary (alternate angles). Thus n₁ sinθ₁ = nₖ sinθₖ.',
         critTitle: 'Total Internal Reflection & Critical Angle',
@@ -923,7 +916,7 @@
         calcListTitle: 'Revealed Boundary Calculations',
         interfaceTitle: (i, j) => `Boundary ${i}–${j} (Layer ${i} → Layer ${j})`,
         interfaceReturnTitle: (i, j) => `Return Boundary ${i}–${j} (Layer ${i} → Layer ${j})`,
-        noRevealedCardsHint: 'No boundary revealed yet. Click "Start" and "Next Step" to verify and unlock calculations step-by-step.',
+        noRevealedCardsHint: 'No boundary data revealed yet — Click "Start" and then "Next Step" to verify each boundary.',
         critAngleLabel: 'Critical Angle',
         noCritAngle: 'N/A (Less dense → Denser, no TIR possible)',
         incAngleLabel: 'Incident Angle',
@@ -934,8 +927,8 @@
         svgPendingHint: 'Parameters ready — Click "Start" above to lock parameters and verify step-by-step',
         svgStepPrompt: 'Predict the next ray segment, then click "Next Step" to verify',
         svgTirLabel: 'Total Internal Reflection (TIR)',
-        svgContinuesInLayer: (n) => `Continues in Layer ${n}`,
-        svgReturnsToLayer1: 'Returns to Layer 1 at θ₁'
+        svgContinueLayer: (n) => `Continues in Layer ${n}`,
+        svgReturnLayer1: 'Returns to Layer 1 at θ₁'
       }
     };
 
@@ -958,20 +951,20 @@
       return MEDIA_CATALOG.find(m => m.id === id) || MEDIA_CATALOG[0];
     }
 
-    // Dynamic text width estimation for SVG boxes so no text ever overflows its border
-    function measureTextWidth(str, fontSize = 13.5) {
-      let widthUnits = 0;
-      for (const ch of String(str)) {
-        const code = ch.charCodeAt(0);
+    // Dynamic text width estimation for SVG boxes so English/Chinese strings never overflow
+    function measureTextBoxWidth(str, fontSize = 13, minWidth = 48, padX = 24) {
+      let width = 0;
+      for (let i = 0; i < str.length; i++) {
+        const code = str.charCodeAt(i);
         if (code > 255) {
-          widthUnits += 1.02; // CJK or wide symbol
-        } else if (ch >= 'A' && ch <= 'Z') {
-          widthUnits += 0.68;
+          width += fontSize * 1.04; // CJK / full-width character
+        } else if (str[i] >= 'A' && str[i] <= 'Z') {
+          width += fontSize * 0.68; // Uppercase Latin
         } else {
-          widthUnits += 0.56;
+          width += fontSize * 0.56; // Lowercase Latin, digits, spaces
         }
       }
-      return Math.ceil(widthUnits * fontSize);
+      return Math.max(minWidth, Math.ceil(width + padX));
     }
 
     // =========================================================================
@@ -992,7 +985,7 @@
       const segments = [];
       const boundaries = [];
 
-      // Step 1: Initial incident ray in Layer 1 (index 0)
+      // Step 1: initial incident ray in Layer 1 (index 0)
       segments.push({
         stepIndex: 1,
         type: 'incident',
@@ -1028,17 +1021,15 @@
 
           const bInfo = {
             stepIndex: stepNum,
-            direction: 'down',
             boundaryIdx: k,
+            direction: 'down',
             fromLayer: k + 1,
             toLayer: k + 2,
             n1: medUpper.n,
             n2: medLower.n,
             critDeg: critDeg,
             incDeg: incDeg,
-            incRad: incRad,
             outDeg: refDeg,
-            outRad: refRad,
             isTIR: false
           };
 
@@ -1060,17 +1051,15 @@
 
           const bInfo = {
             stepIndex: stepNum,
-            direction: 'tir',
             boundaryIdx: k,
+            direction: 'tir',
             fromLayer: k + 1,
             toLayer: k + 2,
             n1: medUpper.n,
             n2: medLower.n,
             critDeg: critDeg,
             incDeg: incDeg,
-            incRad: incRad,
             outDeg: incDeg,
-            outRad: incRad,
             isTIR: true
           };
 
@@ -1089,13 +1078,12 @@
         }
       }
 
-      // If TIR occurred at boundary k, trace upward symmetric path back to Layer 1
+      // If TIR occurred at boundary k > 0, trace upward symmetric path back to Layer 1
       if (tirOccurred && tirBoundaryIndex > 0) {
         for (let m = tirBoundaryIndex; m >= 1; m--) {
           const medLower = layers[m];
           const medUpper = layers[m - 1];
           const incDeg = segments[segments.length - 1].angleDeg;
-          const incRad = segments[segments.length - 1].angleRad;
 
           const sinUpper = snellInvariant / medUpper.n;
           const refRad = Math.asin(Math.min(1, sinUpper));
@@ -1109,17 +1097,15 @@
 
           const bInfo = {
             stepIndex: stepNum,
-            direction: 'up',
             boundaryIdx: m - 1,
+            direction: 'up',
             fromLayer: m + 1,
             toLayer: m,
             n1: medLower.n,
             n2: medUpper.n,
             critDeg: critDegUp,
             incDeg: incDeg,
-            incRad: incRad,
             outDeg: refDeg,
-            outRad: refRad,
             isTIR: false
           };
 
@@ -1148,8 +1134,47 @@
     }
 
     // =========================================================================
-    // 4. SVG Rendering Engine (1:1 True Angles, Responsive ViewBox, Zero Overlap)
+    // 4. SVG Rendering Engine
+    //    - Fixed viewBox="0 0 920 520" scaling with screen
+    //    - True 1:1 geometric angles (never compresses X independently)
+    //    - Middle layer thickness depends ONLY on Layer 2 ray angle (never leaks TIR)
+    //    - Collision-free labels avoiding both other boxes and ray segments
     // =========================================================================
+    function boxesOverlap(a, b, pad = 4) {
+      return !(
+        a.x + a.w + pad < b.x ||
+        b.x + b.w + pad < a.x ||
+        a.y + a.h + pad < b.y ||
+        b.y + b.h + pad < a.y
+      );
+    }
+
+    // Checks if rectangle `box` intersects line segment (x1,y1)-(x2,y2)
+    function boxHitsLineSegment(box, x1, y1, x2, y2, pad = 4) {
+      const rx1 = box.x - pad;
+      const ry1 = box.y - pad;
+      const rx2 = box.x + box.w + pad;
+      const ry2 = box.y + box.h + pad;
+
+      const minX = Math.min(x1, x2);
+      const maxX = Math.max(x1, x2);
+      const minY = Math.min(y1, y2);
+      const maxY = Math.max(y1, y2);
+      if (maxX < rx1 || minX > rx2 || maxY < ry1 || minY > ry2) return false;
+
+      // Sample points along segment
+      const steps = 16;
+      for (let s = 0; s <= steps; s++) {
+        const t = s / steps;
+        const px = x1 + t * (x2 - x1);
+        const py = y1 + t * (y2 - y1);
+        if (px >= rx1 && px <= rx2 && py >= ry1 && py <= ry2) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     function renderSVG(physics) {
       const svg = document.getElementById('optics-svg');
       const t = I18N[state.lang];
@@ -1158,7 +1183,7 @@
       const N = state.numLayers;
 
       // Determine visible steps
-      let visibleSteps = 0;
+      let visibleSteps = 1;
       if (state.phase === 'setup') {
         visibleSteps = 1;
       } else if (state.phase === 'revealing') {
@@ -1167,193 +1192,133 @@
         visibleSteps = physics.totalSteps;
       }
 
-      // Compute layer heights (yBounds: array of N+1 y-coordinates from 0 to H)
-      // Requirement 3: For 3 layers, middle layer height depends ONLY on the ray angle in Layer 2 (theta2),
-      // ALWAYS reserving horizontal space for a potential return bounce (2 * tan(theta2)),
-      // NEVER varying based on whether TIR happens at boundary 2-3 (so layer thickness never leaks TIR!).
+      // Compute Layer Heights (yBounds: [0, y1, y2, ... H])
+      // IMPORTANT: Middle layer thickness is determined ONLY by theta_2 in Layer 2,
+      // ALWAYS reserving horizontal space for a potential return path (2 * tan(theta_2)),
+      // never depending on whether TIR occurs at Boundary 2-3.
       let yBounds = [];
       let middleLayerThinned = false;
 
       if (N === 2) {
         yBounds = [0, H / 2, H];
       } else {
-        const defaultH2 = 166;
+        const defaultH2 = 164; // Default middle layer height
         let h2 = defaultH2;
 
-        // Calculate theoretical angle in Layer 2 solely from Layer 1 -> Layer 2 Snell's law
+        // Calculate theoretical angle in Layer 2 purely from Layer 1 -> Layer 2 Snell's Law
         const n1 = physics.layers[0].n;
         const n2 = physics.layers[1].n;
         const sinTheta2 = (n1 * Math.sin((state.incidentAngle * Math.PI) / 180)) / n2;
 
         if (sinTheta2 < 1.0 - 1e-9) {
           const theta2Rad = Math.asin(Math.min(1, sinTheta2));
-          const tan2 = Math.tan(theta2Rad);
-          // Always reserve room for 2 passes (down + potential up) in Layer 2
-          const factor = 2 * tan2;
-          const maxSpanX = 460; // max horizontal span allowed inside Layer 2
-          if (factor * defaultH2 > maxSpanX) {
-            h2 = Math.max(42, maxSpanX / factor);
+          // Always reserve space for 2 traversals (down + potential return) in Layer 2
+          const horizFactor = 2.0 * Math.tan(theta2Rad);
+          const maxMiddleSpanX = 430;
+          if (horizFactor * defaultH2 > maxMiddleSpanX) {
+            h2 = Math.max(38, maxMiddleSpanX / horizFactor);
+            if (h2 < defaultH2 - 8) {
+              middleLayerThinned = true;
+            }
           }
         }
 
-        if (h2 < defaultH2 - 4) {
-          middleLayerThinned = true;
-        }
-
-        const hOuter = (H - h2) / 2;
-        yBounds = [0, hOuter, hOuter + h2, H];
+        const remH = (H - h2) / 2;
+        yBounds = [0, remH, remH + h2, H];
       }
 
-      // Compute 1:1 true geometric coordinates for every segment
-      // First boundary vertex (x1Vertex, y1Vertex) is placed cleanly to the right of left layer badges
-      let x1Vertex = 310;
-      if (N === 3) {
-        const seg2 = physics.segments[1];
-        if (seg2 && (seg2.type === 'refract_down' || seg2.type === 'tir_reflect')) {
-          const h2 = yBounds[2] - yBounds[1];
-          const dx2 = seg2.type === 'refract_down' ? h2 * Math.tan(seg2.angleRad) : 0;
-          if (dx2 > 180) {
-            x1Vertex = 265;
-          }
-        }
-      }
-
-      const RAY_TERMINAL_LEN = 148;
-      const coords = [];
-
-      // Segment 0: Incident ray in Layer 1 ending at (x1Vertex, yBounds[1])
-      const seg0 = physics.segments[0];
+      // Determine First Boundary Vertex X1
+      const x1Vertex = 305;
       const y1Vertex = yBounds[1];
-      let incLen = RAY_TERMINAL_LEN;
-      if (Math.cos(seg0.angleRad) > 1e-4) {
-        const maxToTop = (y1Vertex - 14) / Math.cos(seg0.angleRad);
-        incLen = Math.min(RAY_TERMINAL_LEN, maxToTop);
-      }
-      if (Math.sin(seg0.angleRad) > 1e-4) {
-        const maxToLeft = (x1Vertex - 18) / Math.sin(seg0.angleRad);
-        incLen = Math.min(incLen, maxToLeft);
-      }
-      incLen = Math.max(incLen, 65);
+      const rayTerminalLen = 150;
 
-      const x0Start = x1Vertex - incLen * Math.sin(seg0.angleRad);
-      const y0Start = y1Vertex - incLen * Math.cos(seg0.angleRad);
-
-      coords.push({
-        ...seg0,
-        x1: x0Start,
-        y1: y0Start,
-        x2: x1Vertex,
-        y2: y1Vertex,
-         terminatesAtBoundary: true
-      });
-
+      // Build exact 1:1 geometric coordinates for each segment
+      const coords = [];
       let currX = x1Vertex;
       let currY = y1Vertex;
 
-      for (let i = 1; i < physics.segments.length; i++) {
+      for (let i = 0; i < physics.segments.length; i++) {
         const seg = physics.segments[i];
-        const isLastSeg = (i === physics.segments.length - 1);
+        const rad = seg.angleRad;
+        const sinA = Math.sin(rad);
+        const cosA = Math.cos(rad);
 
-        // Does this segment travel across the middle layer from one boundary to another,
-        // or is it a terminal ray continuing in the top/bottom layer?
-        const isInternalCrossing = !isLastSeg;
+        if (i === 0) {
+          // First segment: incident ray in Layer 1 ending at (x1Vertex, y1Vertex)
+          let len = rayTerminalLen;
+          if (cosA > 1e-5) {
+            len = Math.min(len, (y1Vertex - 14) / cosA);
+          }
+          if (sinA > 1e-5) {
+            len = Math.min(len, (x1Vertex - 18) / sinA);
+          }
+          len = Math.max(65, len);
 
-        if (isInternalCrossing) {
-          const targetY = seg.direction === 'down'
-            ? yBounds[seg.layerIndex + 1]
-            : yBounds[seg.layerIndex];
-          const dy = Math.abs(targetY - currY);
-          const dx = dy * Math.tan(seg.angleRad);
-          const nextX = currX + dx;
-
+          const startX = x1Vertex - len * sinA;
+          const startY = y1Vertex - len * cosA;
           coords.push({
             ...seg,
-            x1: currX,
-            y1: currY,
-            x2: nextX,
-            y2: targetY,
-            terminatesAtBoundary: true
+            x1: startX,
+            y1: startY,
+            x2: x1Vertex,
+            y2: y1Vertex
           });
-          currX = nextX;
-          currY = targetY;
         } else {
-          // Terminal ray continuing in Layer n (downward) or returning in Layer 1 (upward)
-          let termLen = RAY_TERMINAL_LEN;
-          if (seg.direction === 'down') {
-            const availY = (H - 48) - currY;
-            if (Math.cos(seg.angleRad) > 1e-4) {
-              termLen = Math.min(termLen, availY / Math.cos(seg.angleRad));
-            }
+          const isLastSeg = (i === physics.segments.length - 1);
+          const crossesMiddleLayer = !isLastSeg;
+
+          if (crossesMiddleLayer) {
+            // Segment traverses intermediate Layer 2 from one boundary to the other
+            const nextY = seg.direction === 'down'
+              ? yBounds[seg.layerIndex + 1]
+              : yBounds[seg.layerIndex];
+            const dy = Math.abs(nextY - currY);
+            const dx = dy * Math.tan(rad);
+            const nextX = currX + dx;
+
+            coords.push({
+              ...seg,
+              x1: currX,
+              y1: currY,
+              x2: nextX,
+              y2: nextY
+            });
+            currX = nextX;
+            currY = nextY;
           } else {
-            const availY = currY - 48;
-            if (Math.cos(seg.angleRad) > 1e-4) {
-              termLen = Math.min(termLen, availY / Math.cos(seg.angleRad));
+            // Final ray segment continuing in Layer N or returning into Layer 1
+            let len = rayTerminalLen;
+            if (seg.direction === 'down' && cosA > 1e-5) {
+              len = Math.min(len, (H - 46 - currY) / cosA);
+            } else if (seg.direction === 'up' && cosA > 1e-5) {
+              len = Math.min(len, (currY - 46) / cosA);
             }
-          }
-          if (Math.sin(seg.angleRad) > 1e-4) {
-            const availX = (W - 24) - currX;
-            termLen = Math.min(termLen, availX / Math.sin(seg.angleRad));
-          }
-          termLen = Math.max(termLen, 75);
+            if (sinA > 1e-5) {
+              len = Math.min(len, (W - 24 - currX) / sinA);
+            }
+            len = Math.max(68, len);
 
-          const nextX = currX + termLen * Math.sin(seg.angleRad);
-          const nextY = seg.direction === 'down'
-            ? currY + termLen * Math.cos(seg.angleRad)
-            : currY - termLen * Math.cos(seg.angleRad);
+            const nextX = currX + len * sinA;
+            const nextY = seg.direction === 'down'
+              ? currY + len * cosA
+              : currY - len * cosA;
 
-          coords.push({
-            ...seg,
-            x1: currX,
-            y1: currY,
-            x2: nextX,
-            y2: nextY,
-            terminatesAtBoundary: false
-          });
-          currX = nextX;
-          currY = nextY;
+            coords.push({
+              ...seg,
+              x1: currX,
+              y1: currY,
+              x2: nextX,
+              y2: nextY
+            });
+            currX = nextX;
+            currY = nextY;
+          }
         }
       }
 
-      // Collision registry for labels & ray segments
+      // Keep track of placed bounding boxes & active ray segments to prevent overlaps
       const placedBoxes = [];
       const activeRayLines = [];
-
-      function boxesOverlap(a, b, pad = 4) {
-        return !(
-          a.x + a.w + pad < b.x ||
-          b.x + b.w + pad < a.x ||
-          a.y + a.h + pad < b.y ||
-          b.y + b.h + pad < a.y
-        );
-      }
-
-      // Check minimum distance from rectangle center/edges to a line segment
-      function boxHitsLineSegment(box, seg, clearance = 6) {
-        // Expand box by clearance and test if segment intersects or comes too close
-        const rx1 = box.x - clearance;
-        const ry1 = box.y - clearance;
-        const rx2 = box.x + box.w + clearance;
-        const ry2 = box.y + box.h + clearance;
-
-        // Sample 7 points along the segment (excluding the vertex endpoint itself within 16px)
-        const dx = seg.x2 - seg.x1;
-        const dy = seg.y2 - seg.y1;
-        const len = Math.hypot(dx, dy);
-        if (len < 1) return false;
-
-        for (let tStep = 0.15; tStep <= 0.92; tStep += 0.11) {
-          const px = seg.x1 + dx * tStep;
-          const py = seg.y1 + dy * tStep;
-          if (px >= rx1 && px <= rx2 && py >= ry1 && py <= ry2) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      function registerBox(x, y, w, h) {
-        placedBoxes.push({ x, y, w, h });
-      }
 
       let html = `
         <defs>
@@ -1364,141 +1329,228 @@
             <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#7c3aed"/>
           </marker>
           <marker id="arrow-partial" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-            <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ea580c" fill-opacity="0.7"/>
+            <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ea580c" fill-opacity="0.75"/>
           </marker>
         </defs>
       `;
 
-      // 1. Draw Layer Backgrounds & Dynamic-Width Left Media Badges
+      // 1. Draw Layer Backgrounds & Left Media Badges
       for (let i = 0; i < N; i++) {
         const med = physics.layers[i];
         const yTop = yBounds[i];
-        const yBot = yBounds[i + 1];
-        const lHeight = yBot - yTop;
+        const layerH = yBounds[i + 1] - yBounds[i];
         const medName = state.lang === 'zh' ? med.zh : med.en;
-
         const line1Text = `${t.layerName(i + 1)}: ${medName}`;
         const line2Text = `n${i + 1} = ${med.n.toFixed(2)}`;
+
         const showThinNote = (N === 3 && i === 1 && middleLayerThinned);
-        const noteText = showThinNote ? t.thinnerLayerNote : '';
+        const noteText = showThinNote ? t.thinLayerNote : '';
 
-        const compactBadge = lHeight < 68;
-        let boxW = Math.max(
-          measureTextWidth(line1Text, 14),
-          measureTextWidth(line2Text, 14)
-        ) + 26;
-        let boxH = compactBadge ? 34 : 52;
+        const badgeW = Math.max(
+          measureTextBoxWidth(line1Text, 13.5, 136, 26),
+          measureTextBoxWidth(line2Text, 13.5, 136, 26),
+          showThinNote ? measureTextBoxWidth(noteText, 11, 136, 22) : 0
+        );
 
-        if (compactBadge) {
-          const combined = `${line1Text} (n${i + 1}=${med.n.toFixed(2)})`;
-          boxW = Math.max(boxW, measureTextWidth(combined, 13) + 24);
-          if (showThinNote) {
-            boxW = Math.max(boxW, measureTextWidth(noteText, 11) + 24);
-            boxH = 44;
-          }
-        } else if (showThinNote) {
-          boxW = Math.max(boxW, measureTextWidth(noteText, 11.5) + 24);
-          boxH = 68;
-        }
+        const isCompactBadge = layerH < 64 && !showThinNote;
+        const badgeH = showThinNote ? (layerH < 56 ? 38 : 66) : (isCompactBadge ? 34 : 50);
 
-        // Position badge so Layer 1 incident ray never crosses it even at 89 deg
         let badgeY = yTop + 12;
-        if (i === 0) {
-          const rayYAtLeftEdge = coords[0].y1;
-          if (rayYAtLeftEdge < yTop + boxH + 22) {
-            badgeY = Math.max(yTop + 8, yBot - boxH - 10);
+        if (i === 0 && coords.length > 0) {
+          const c0 = coords[0];
+          if (c0.x1 < 185 && c0.y1 > yTop + 6 && c0.y1 < yTop + 85) {
+            badgeY = Math.max(yTop + 8, yBounds[1] - badgeH - 10);
           }
         } else {
-          badgeY = yTop + Math.max(4, (lHeight - boxH) / 2);
+          badgeY = yTop + Math.max(4, (layerH - badgeH) / 2);
         }
 
-        registerBox(12, badgeY, boxW, boxH);
+        const badgeBox = { x: 12, y: badgeY, w: badgeW, h: badgeH };
+        placedBoxes.push(badgeBox);
 
-        html += `<rect x="0" y="${yTop}" width="${W}" height="${lHeight}" fill="${med.fill}" />`;
+        html += `<rect x="0" y="${yTop}" width="${W}" height="${layerH}" fill="${med.fill}" />`;
 
-        if (compactBadge) {
+        if (showThinNote && layerH < 56) {
+          // Ultra-compact 2-line badge when middle layer is very thin
+          const wideW = Math.max(badgeW, measureTextBoxWidth(`${line1Text}  n2=${med.n.toFixed(2)}`, 12.5, 180, 24));
+          badgeBox.w = wideW;
           html += `
-            <g transform="translate(12, ${badgeY})">
-              <rect x="0" y="0" width="${boxW}" height="${boxH}" rx="6" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.2"/>
-              <text x="10" y="${showThinNote ? 17 : 22}" font-size="13" font-weight="700" fill="#0f172a">
-                ${line1Text} (<tspan font-family="Times New Roman, serif" font-style="italic" fill="#2563eb">n</tspan><tspan font-size="10" dy="2" fill="#2563eb">${i + 1}</tspan><tspan dy="-2" fill="#2563eb">=${med.n.toFixed(2)}</tspan>)
+            <g transform="translate(${badgeBox.x}, ${badgeBox.y})">
+              <rect x="0" y="0" width="${wideW}" height="${badgeH}" rx="6" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.2"/>
+              <text x="10" y="15" font-size="12.5" font-weight="700" fill="#0f172a">
+                ${line1Text} (<tspan font-family="Times New Roman, serif" font-style="italic" fill="#2563eb">n</tspan><tspan font-size="10" dy="2" fill="#2563eb">2</tspan><tspan dy="-2" fill="#2563eb">=${med.n.toFixed(2)}</tspan>)
               </text>
-              ${showThinNote ? `<text x="10" y="35" font-size="11" font-weight="600" fill="#64748b">${noteText}</text>` : ''}
+              <text x="10" y="31" font-size="10.5" font-weight="600" fill="#64748b">${noteText}</text>
+            </g>
+          `;
+        } else if (showThinNote) {
+          html += `
+            <g transform="translate(${badgeBox.x}, ${badgeBox.y})">
+              <rect x="0" y="0" width="${badgeW}" height="${badgeH}" rx="7" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.2"/>
+              <text x="10" y="19" font-size="13.5" font-weight="700" fill="#0f172a">${line1Text}</text>
+              <text x="10" y="38" font-size="13.5" font-weight="700" fill="#2563eb">
+                <tspan font-family="Times New Roman, serif" font-style="italic">n</tspan><tspan font-size="10.5" dy="3">${i + 1}</tspan><tspan dy="-3"> = ${med.n.toFixed(2)}</tspan>
+              </text>
+              <text x="10" y="56" font-size="10.8" font-weight="600" fill="#64748b">${noteText}</text>
+            </g>
+          `;
+        } else if (isCompactBadge) {
+          const singleLineW = measureTextBoxWidth(`${line1Text}  ${line2Text}`, 13, 175, 24);
+          badgeBox.w = singleLineW;
+          html += `
+            <g transform="translate(${badgeBox.x}, ${badgeBox.y})">
+              <rect x="0" y="0" width="${singleLineW}" height="${badgeH}" rx="6" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.2"/>
+              <text x="10" y="22" font-size="13" font-weight="700" fill="#0f172a">
+                ${line1Text} &nbsp;<tspan fill="#2563eb"><tspan font-family="Times New Roman, serif" font-style="italic">n</tspan><tspan font-size="10" dy="2">${i + 1}</tspan><tspan dy="-2">=${med.n.toFixed(2)}</tspan></tspan>
+              </text>
             </g>
           `;
         } else {
           html += `
-            <g transform="translate(12, ${badgeY})">
-              <rect x="0" y="0" width="${boxW}" height="${boxH}" rx="8" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.2"/>
-              <text x="12" y="21" font-size="14" font-weight="700" fill="#0f172a">${line1Text}</text>
-              <text x="12" y="42" font-size="14" font-weight="700" fill="#2563eb">
-                <tspan font-family="Times New Roman, serif" font-style="italic">n</tspan><tspan font-size="11" dy="3">${i + 1}</tspan><tspan dy="-3"> = ${med.n.toFixed(2)}</tspan>
+            <g transform="translate(${badgeBox.x}, ${badgeBox.y})">
+              <rect x="0" y="0" width="${badgeW}" height="${badgeH}" rx="7" fill="#ffffff" fill-opacity="0.94" stroke="#cbd5e1" stroke-width="1.2"/>
+              <text x="10" y="20" font-size="13.5" font-weight="700" fill="#0f172a">${line1Text}</text>
+              <text x="10" y="41" font-size="13.5" font-weight="700" fill="#2563eb">
+                <tspan font-family="Times New Roman, serif" font-style="italic">n</tspan><tspan font-size="10.5" dy="3">${i + 1}</tspan><tspan dy="-3"> = ${med.n.toFixed(2)}</tspan>
               </text>
-              ${showThinNote ? `<text x="12" y="60" font-size="11" font-weight="600" fill="#64748b">${noteText}</text>` : ''}
             </g>
           `;
         }
 
         if (i > 0) {
-          html += `<line x1="0" y1="${yTop}" x2="${W}" y2="${yTop}" stroke="#64748b" stroke-width="2" />`;
+          html += `<line x1="0" y1="${yTop}" x2="${W}" y2="${yTop}" stroke="#64748b" stroke-width="1.8" />`;
         }
       }
 
-      // Register visible main ray segments so angle pills avoid sitting on top of rays
+      // Register visible ray segments first so all angle labels can avoid sitting on top of rays
       for (let i = 0; i < visibleSteps && i < coords.length; i++) {
-        activeRayLines.push({ x1: coords[i].x1, y1: coords[i].y1, x2: coords[i].x2, y2: coords[i].y2 });
+        const c = coords[i];
+        activeRayLines.push({ x1: c.x1, y1: c.y1, x2: c.x2, y2: c.y2 });
       }
 
-      // 2. If in 'unlocked' exploration mode, draw Partially Reflected Weak Rays at downward refracting boundaries
+      // Helper to place a pill label with collision avoidance against both existing boxes AND ray lines
+      function placeAngleLabel(candidates, text, color, anchorX, anchorY) {
+        const w = measureTextBoxWidth(text, 12.5, 46, 12);
+        const h = 20;
+
+        let chosen = null;
+        // Pass 1: Avoids both placedBoxes and activeRayLines
+        for (let k = 0; k < candidates.length; k++) {
+          const cand = candidates[k];
+          const box = {
+            x: Math.min(Math.max(cand.x - w / 2, 8), W - w - 8),
+            y: Math.min(Math.max(cand.y - h / 2, 6), H - h - 6),
+            w,
+            h
+          };
+          const hitBox = placedBoxes.some(b => boxesOverlap(box, b, 3));
+          const hitRay = activeRayLines.some(l => boxHitsLineSegment(box, l.x1, l.y1, l.x2, l.y2, 2));
+          if (!hitBox && !hitRay) {
+            chosen = box;
+            break;
+          }
+        }
+
+        // Pass 2: Avoids placedBoxes only
+        if (!chosen) {
+          for (let k = 0; k < candidates.length; k++) {
+            const cand = candidates[k];
+            const box = {
+              x: Math.min(Math.max(cand.x - w / 2, 8), W - w - 8),
+              y: Math.min(Math.max(cand.y - h / 2, 6), H - h - 6),
+              w,
+              h
+            };
+            const hitBox = placedBoxes.some(b => boxesOverlap(box, b, 2));
+            if (!hitBox) {
+              chosen = box;
+              break;
+            }
+          }
+        }
+
+        if (!chosen) {
+          chosen = {
+            x: Math.min(Math.max(candidates[0].x - w / 2, 8), W - w - 8),
+            y: Math.min(Math.max(candidates[0].y - h / 2, 6), H - h - 6),
+            w,
+            h
+          };
+        }
+
+        placedBoxes.push(chosen);
+        const cx = chosen.x + w / 2;
+        const cy = chosen.y + h / 2;
+        const dist = Math.hypot(cx - anchorX, cy - anchorY);
+        let leaderHtml = '';
+        if (dist > 28) {
+          leaderHtml = `<line x1="${anchorX}" y1="${anchorY}" x2="${cx}" y2="${cy}" stroke="${color}" stroke-width="1" stroke-dasharray="2,2" opacity="0.75" />`;
+        }
+
+        return `
+          ${leaderHtml}
+          <g transform="translate(${chosen.x}, ${chosen.y})">
+            <rect x="0" y="0" width="${w}" height="${h}" rx="4" fill="#ffffff" fill-opacity="0.94" stroke="${color}" stroke-width="1.2"/>
+            <text x="${w / 2}" y="14.5" text-anchor="middle" font-size="12" font-weight="700" fill="${color}">${text}</text>
+          </g>
+        `;
+      }
+
+      // 2. Draw Partially Reflected Weak Rays ONLY in 'unlocked' exploration phase
       if (state.phase === 'unlocked') {
-        for (let bIdx = 0; bIdx < physics.boundaries.length; bIdx++) {
-          const b = physics.boundaries[bIdx];
-          if (b.direction === 'down' && !b.isTIR) {
-            const incomingSeg = coords[b.stepIndex - 2];
-            if (!incomingSeg) continue;
-            const vx = incomingSeg.x2;
-            const vy = incomingSeg.y2;
-            const reflRad = b.incRad;
-            const partialLen = N === 3 && b.boundaryIdx === 1
-              ? Math.min(62, (yBounds[2] - yBounds[1]) * 0.78)
-              : 74;
+        for (let i = 0; i < coords.length; i++) {
+          const c = coords[i];
+          if (c.direction === 'down' && c.layerIndex < N - 1) {
+            const nextSeg = coords[i + 1];
+            if (nextSeg && nextSeg.type === 'refract_down') {
+              const vx = c.x2;
+              const vy = c.y2;
+              const rad = c.angleRad;
+              const partialLen = 68;
+              const px2 = vx + partialLen * Math.sin(rad);
+              const py2 = vy - partialLen * Math.cos(rad);
+              const pMidX = (vx + px2) / 2;
+              const pMidY = (vy + py2) / 2;
 
-            const px2 = vx + partialLen * Math.sin(reflRad);
-            const py2 = vy - partialLen * Math.cos(reflRad);
-            const pMidX = (vx + px2) / 2;
-            const pMidY = (vy + py2) / 2;
+              activeRayLines.push({ x1: vx, y1: vy, x2: px2, y2: py2 });
 
-            activeRayLines.push({ x1: vx, y1: vy, x2: px2, y2: py2 });
+              html += `
+                <line x1="${vx}" y1="${vy}" x2="${pMidX}" y2="${pMidY}"
+                      stroke="#f97316" stroke-width="1.8" stroke-dasharray="4,3" stroke-opacity="0.65"
+                      marker-end="url(#arrow-partial)" />
+                <line x1="${pMidX}" y1="${pMidY}" x2="${px2}" y2="${py2}"
+                      stroke="#f97316" stroke-width="1.8" stroke-dasharray="4,3" stroke-opacity="0.65" />
+              `;
 
-            html += `
-              <line x1="${vx}" y1="${vy}" x2="${pMidX}" y2="${pMidY}"
-                    stroke="#f97316" stroke-width="1.9" stroke-dasharray="5,3" stroke-opacity="0.7"
-                    marker-end="url(#arrow-partial)" />
-              <line x1="${pMidX}" y1="${pMidY}" x2="${px2}" y2="${py2}"
-                    stroke="#f97316" stroke-width="1.9" stroke-dasharray="5,3" stroke-opacity="0.7" />
-            `;
+              if (c.angleDeg > 0.3) {
+                const pArcR = 24;
+                const sAng = -Math.PI / 2;
+                const eAng = -Math.PI / 2 + rad;
+                const xs = vx + pArcR * Math.cos(sAng);
+                const ys = vy + pArcR * Math.sin(sAng);
+                const xe = vx + pArcR * Math.cos(eAng);
+                const ye = vy + pArcR * Math.sin(eAng);
+                const midA = (sAng + eAng) / 2;
+                const anchorX = vx + pArcR * Math.cos(midA);
+                const anchorY = vy + pArcR * Math.sin(midA);
 
-            if (b.incDeg > 0.3) {
-              const pArcR = 23;
-              html += renderSmartAngleArcAndLabel(
-                vx, vy,
-                pArcR,
-                -Math.PI / 2,
-                -Math.PI / 2 + reflRad,
-                `${b.incDeg.toFixed(1)}°`,
-                '#ea580c',
-                'top-right',
-                placedBoxes,
-                activeRayLines,
-                true
-              );
+                html += `<path d="M ${xs} ${ys} A ${pArcR} ${pArcR} 0 0 1 ${xe} ${ye}" fill="none" stroke="#ea580c" stroke-width="1.3" stroke-opacity="0.7" />`;
+
+                const pCandidates = [
+                  { x: vx + (pArcR + 22) * Math.cos(midA), y: vy + (pArcR + 20) * Math.sin(midA) },
+                  { x: px2 + 18, y: py2 - 8 },
+                  { x: vx + 34, y: vy - 36 },
+                  { x: vx + 48, y: vy - 18 }
+                ];
+                html += placeAngleLabel(pCandidates, `${c.angleDeg.toFixed(1)}°`, '#ea580c', anchorX, anchorY);
+              }
             }
           }
         }
       }
 
-      // 3. Draw Normals, Main Rays, Angle Arcs & Non-Overlapping Labels for Visible Steps
-      const angleLabelMarkupList = [];
+      // 3. Draw Normals, Main Ray Segments, Angle Arcs & Collision-Free Angle Labels
+      const normalHalfLen = 46;
 
       for (let i = 0; i < visibleSteps && i < coords.length; i++) {
         const c = coords[i];
@@ -1509,207 +1561,256 @@
         const midX = (c.x1 + c.x2) / 2;
         const midY = (c.y1 + c.y2) / 2;
 
-        // Draw Ray Segment
         html += `
           <line x1="${c.x1}" y1="${c.y1}" x2="${midX}" y2="${midY}" stroke="${rayColor}" stroke-width="3.2" stroke-linecap="round" marker-end="url(#${arrowId})" />
           <line x1="${midX}" y1="${midY}" x2="${c.x2}" y2="${c.y2}" stroke="${rayColor}" stroke-width="3.2" stroke-linecap="round" />
         `;
 
-        // Draw Normal & Incident Angle at the end of segment if it hits an internal boundary
-        if (c.terminatesAtBoundary) {
-          const normalHalfLen = 52;
+        const hitsInternalBoundary = (c.direction === 'down' && c.layerIndex < N - 1) || (c.direction === 'up' && c.layerIndex > 0);
+
+        if (hitsInternalBoundary) {
+          // Draw Normal at (c.x2, c.y2)
           html += `
             <line x1="${c.x2}" y1="${c.y2 - normalHalfLen}" x2="${c.x2}" y2="${c.y2 + normalHalfLen}"
-                  stroke="#334155" stroke-width="1.8" stroke-dasharray="5,4" />
+                  stroke="#334155" stroke-width="1.7" stroke-dasharray="5,4" />
           `;
 
-          const incArcR = 28;
-          if (c.angleDeg > 0.3) {
-            if (c.direction === 'down') {
-              angleLabelMarkupList.push(
-                renderSmartAngleArcAndLabel(
-                  c.x2, c.y2,
-                  incArcR,
-                  -Math.PI / 2 - c.angleRad,
-                  -Math.PI / 2,
-                  `${c.angleDeg.toFixed(1)}°`,
-                  '#b91c1c',
-                  'top-left',
-                  placedBoxes,
-                  activeRayLines
-                )
-              );
+          const arcR = 26;
+          const labelStr = `${c.angleDeg.toFixed(1)}°`;
+
+          if (c.direction === 'down') {
+            // Downward incident angle at (c.x2, c.y2): between upward normal (-PI/2) and incoming ray (-PI/2 - rad)
+            if (c.angleDeg > 0.3) {
+              const sAng = -Math.PI / 2 - c.angleRad;
+              const eAng = -Math.PI / 2;
+              const xs = c.x2 + arcR * Math.cos(sAng);
+              const ys = c.y2 + arcR * Math.sin(sAng);
+              const xe = c.x2 + arcR * Math.cos(eAng);
+              const ye = c.y2 + arcR * Math.sin(eAng);
+              const midA = (sAng + eAng) / 2;
+              const anchorX = c.x2 + arcR * Math.cos(midA);
+              const anchorY = c.y2 + arcR * Math.sin(midA);
+
+              html += `<path d="M ${xs} ${ys} A ${arcR} ${arcR} 0 0 1 ${xe} ${ye}" fill="none" stroke="#b91c1c" stroke-width="1.8" />`;
+
+              // Candidates chosen inside the angle sector or beside the normal, avoiding the ray line itself
+              const candidates = [
+                { x: c.x2 + (arcR + 22) * Math.cos(midA), y: c.y2 + (arcR + 22) * Math.sin(midA) },
+                { x: c.x2 - 34, y: c.y2 - 38 },
+                { x: c.x2 - 54, y: c.y2 - 18 },
+                { x: c.x2 + 32, y: c.y2 - 36 },
+                { x: c.x2 - 68, y: c.y2 - 34 }
+              ];
+              html += placeAngleLabel(candidates, labelStr, '#b91c1c', anchorX, anchorY);
             } else {
-              angleLabelMarkupList.push(
-                renderSmartAngleArcAndLabel(
-                  c.x2, c.y2,
-                  incArcR,
-                  Math.PI / 2,
-                  Math.PI / 2 + c.angleRad,
-                  `${c.angleDeg.toFixed(1)}°`,
-                  '#6d28d9',
-                  'bottom-left',
-                  placedBoxes,
-                  activeRayLines
-                )
-              );
+              const candidates = [
+                { x: c.x2 - 36, y: c.y2 - 26 },
+                { x: c.x2 + 36, y: c.y2 - 26 }
+              ];
+              html += placeAngleLabel(candidates, '0.0°', '#b91c1c', c.x2, c.y2 - 20);
             }
           } else {
-            const yOff = c.direction === 'down' ? -28 : 28;
-            angleLabelMarkupList.push(
-              renderSmartPillLabel(c.x2 - 34, c.y2 + yOff, '0.0°', c.direction === 'down' ? '#b91c1c' : '#6d28d9', placedBoxes, activeRayLines, c.x2, c.y2)
-            );
+            // Upward incident angle at (c.x2, c.y2): between downward normal (+PI/2) and incoming upward ray (+PI/2 + rad)
+            if (c.angleDeg > 0.3) {
+              const sAng = Math.PI / 2;
+              const eAng = Math.PI / 2 + c.angleRad;
+              const xs = c.x2 + arcR * Math.cos(sAng);
+              const ys = c.y2 + arcR * Math.sin(sAng);
+              const xe = c.x2 + arcR * Math.cos(eAng);
+              const ye = c.y2 + arcR * Math.sin(eAng);
+              const midA = (sAng + eAng) / 2;
+              const anchorX = c.x2 + arcR * Math.cos(midA);
+              const anchorY = c.y2 + arcR * Math.sin(midA);
+
+              html += `<path d="M ${xs} ${ys} A ${arcR} ${arcR} 0 0 1 ${xe} ${ye}" fill="none" stroke="#6d28d9" stroke-width="1.8" />`;
+
+              const candidates = [
+                { x: c.x2 + (arcR + 22) * Math.cos(midA), y: c.y2 + (arcR + 22) * Math.sin(midA) },
+                { x: c.x2 - 42, y: c.y2 + 28 },
+                { x: c.x2 + 38, y: c.y2 + 28 },
+                { x: c.x2 - 62, y: c.y2 + 18 }
+              ];
+              html += placeAngleLabel(candidates, labelStr, '#6d28d9', anchorX, anchorY);
+            } else {
+              html += placeAngleLabel([{ x: c.x2 - 36, y: c.y2 + 26 }], '0.0°', '#6d28d9', c.x2, c.y2 + 20);
+            }
           }
         }
 
-        // Draw Departure Angle (Refracted or TIR Reflected) at the start vertex (c.x1, c.y1) for i >= 1
+        // Departure Angle at (c.x1, c.y1) for segments i >= 1
         if (i >= 1) {
-          const depArcR = 30;
+          const arcR = 28;
+          const labelStr = `${c.angleDeg.toFixed(1)}°`;
+
           if (c.type === 'refract_down') {
             if (c.angleDeg > 0.3) {
-              angleLabelMarkupList.push(
-                renderSmartAngleArcAndLabel(
-                  c.x1, c.y1,
-                  depArcR,
-                  Math.PI / 2 - c.angleRad,
-                  Math.PI / 2,
-                  `${c.angleDeg.toFixed(1)}°`,
-                  '#15803d',
-                  'bottom-right',
-                  placedBoxes,
-                  activeRayLines
-                )
-              );
+              const sAng = Math.PI / 2 - c.angleRad;
+              const eAng = Math.PI / 2;
+              const xs = c.x1 + arcR * Math.cos(sAng);
+              const ys = c.y1 + arcR * Math.sin(sAng);
+              const xe = c.x1 + arcR * Math.cos(eAng);
+              const ye = c.y1 + arcR * Math.sin(eAng);
+              const midA = (sAng + eAng) / 2;
+              const anchorX = c.x1 + arcR * Math.cos(midA);
+              const anchorY = c.y1 + arcR * Math.sin(midA);
+
+              html += `<path d="M ${xs} ${ys} A ${arcR} ${arcR} 0 0 1 ${xe} ${ye}" fill="none" stroke="#15803d" stroke-width="1.8" />`;
+
+              const candidates = [
+                { x: c.x1 + (arcR + 22) * Math.cos(midA), y: c.y1 + (arcR + 22) * Math.sin(midA) },
+                { x: c.x1 - 34, y: c.y1 + 26 },
+                { x: c.x1 + 42, y: c.y1 + 32 },
+                { x: c.x1 + 58, y: c.y1 + 18 }
+              ];
+              html += placeAngleLabel(candidates, labelStr, '#15803d', anchorX, anchorY);
             } else {
-              angleLabelMarkupList.push(
-                renderSmartPillLabel(c.x1 + 34, c.y1 + 28, '0.0°', '#15803d', placedBoxes, activeRayLines, c.x1, c.y1)
-              );
+              html += placeAngleLabel([{ x: c.x1 + 36, y: c.y1 + 26 }], '0.0°', '#15803d', c.x1, c.y1 + 20);
             }
           } else if (c.type === 'tir_reflect') {
-            angleLabelMarkupList.push(
-              renderSmartAngleArcAndLabel(
-                c.x1, c.y1,
-                depArcR,
-                -Math.PI / 2,
-                -Math.PI / 2 + c.angleRad,
-                `${c.angleDeg.toFixed(1)}°`,
-                '#7c3aed',
-                'top-right',
-                placedBoxes,
-                activeRayLines
-              )
-            );
+            const sAng = -Math.PI / 2;
+            const eAng = -Math.PI / 2 + c.angleRad;
+            const xs = c.x1 + arcR * Math.cos(sAng);
+            const ys = c.y1 + arcR * Math.sin(sAng);
+            const xe = c.x1 + arcR * Math.cos(eAng);
+            const ye = c.y1 + arcR * Math.sin(eAng);
+            const midA = (sAng + eAng) / 2;
+            const anchorX = c.x1 + arcR * Math.cos(midA);
+            const anchorY = c.y1 + arcR * Math.sin(midA);
 
-            // Prominent TIR Badge below the reflection vertex (dynamic width)
-            const tirStr = `⚡ ${t.svgTirLabel}`;
-            const badgeW = measureTextWidth(tirStr, 13.5) + 26;
+            html += `<path d="M ${xs} ${ys} A ${arcR} ${arcR} 0 0 1 ${xe} ${ye}" fill="none" stroke="#7c3aed" stroke-width="1.8" />`;
+
+            const candidates = [
+              { x: c.x1 + (arcR + 22) * Math.cos(midA), y: c.y1 + (arcR + 22) * Math.sin(midA) },
+              { x: c.x1 + 42, y: c.y1 - 30 },
+              { x: c.x1 + 58, y: c.y1 - 16 },
+              { x: c.x1 + 24, y: c.y1 - 44 }
+            ];
+            html += placeAngleLabel(candidates, labelStr, '#7c3aed', anchorX, anchorY);
+
+            // Prominent TIR Badge below the reflection vertex
+            const tirText = `⚡ ${t.svgTirLabel}`;
+            const badgeW = measureTextBoxWidth(tirText, 13, 140, 26);
             const badgeH = 28;
             const bx = Math.min(Math.max(c.x1 - badgeW / 2, 160), W - badgeW - 12);
-            const by = c.y1 + 14;
-            registerBox(bx, by, badgeW, badgeH);
+            const by = Math.min(c.y1 + 12, H - badgeH - 8);
+            placedBoxes.push({ x: bx, y: by, w: badgeW, h: badgeH });
 
-            angleLabelMarkupList.push(`
+            html += `
               <g transform="translate(${bx}, ${by})">
                 <rect x="0" y="0" width="${badgeW}" height="${badgeH}" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.8"/>
-                <text x="${badgeW / 2}" y="19" text-anchor="middle" font-size="13" font-weight="700" fill="#b91c1c">${tirStr}</text>
+                <text x="${badgeW / 2}" y="19" text-anchor="middle" font-size="13" font-weight="700" fill="#b91c1c">${tirText}</text>
               </g>
-            `);
+            `;
           } else if (c.type === 'refract_up') {
             if (c.angleDeg > 0.3) {
-              angleLabelMarkupList.push(
-                renderSmartAngleArcAndLabel(
-                  c.x1, c.y1,
-                  depArcR,
-                  -Math.PI / 2,
-                  -Math.PI / 2 + c.angleRad,
-                  `${c.angleDeg.toFixed(1)}°`,
-                  '#6d28d9',
-                  'top-right',
-                  placedBoxes,
-                  activeRayLines
-                )
-              );
-            } else {
-              angleLabelMarkupList.push(
-                renderSmartPillLabel(c.x1 + 34, c.y1 - 28, '0.0°', '#6d28d9', placedBoxes, activeRayLines, c.x1, c.y1)
-              );
+              const sAng = -Math.PI / 2;
+              const eAng = -Math.PI / 2 + c.angleRad;
+              const xs = c.x1 + arcR * Math.cos(sAng);
+              const ys = c.y1 + arcR * Math.sin(sAng);
+              const xe = c.x1 + arcR * Math.cos(eAng);
+              const ye = c.y1 + arcR * Math.sin(eAng);
+              const midA = (sAng + eAng) / 2;
+              const anchorX = c.x1 + arcR * Math.cos(midA);
+              const anchorY = c.y1 + arcR * Math.sin(midA);
+
+              html += `<path d="M ${xs} ${ys} A ${arcR} ${arcR} 0 0 1 ${xe} ${ye}" fill="none" stroke="#6d28d9" stroke-width="1.8" />`;
+
+              const candidates = [
+                { x: c.x1 + (arcR + 22) * Math.cos(midA), y: c.y1 + (arcR + 22) * Math.sin(midA) },
+                { x: c.x1 + 42, y: c.y1 - 30 },
+                { x: c.x1 + 26, y: c.y1 - 44 },
+                { x: c.x1 - 38, y: c.y1 - 30 }
+              ];
+              html += placeAngleLabel(candidates, labelStr, '#6d28d9', anchorX, anchorY);
             }
           }
         }
       }
 
-      // Append all angle arcs and labels so they render cleanly above rays
-      html += angleLabelMarkupList.join('');
-
-      // 4. Final Status Badge or Step Prompts (Strictly avoiding all placed angle labels & rays!)
+      // 4. Final Ray Status Badge or Step Prompts (Guaranteed NOT to cover any angle label or ray)
       if (visibleSteps >= physics.totalSteps && coords.length > 0) {
         const lastC = coords[coords.length - 1];
         const isTopReturn = lastC.direction === 'up';
-        const statusStr = `✓ ${isTopReturn ? t.svgReturnsToLayer1 : t.svgContinuesInLayer(N)} (${lastC.angleDeg.toFixed(1)}°)`;
-        const boxW = measureTextWidth(statusStr, 13.5) + 28;
+        const statusStr = isTopReturn
+          ? `✓ ${t.svgReturnLayer1} (${lastC.angleDeg.toFixed(1)}°)`
+          : `✓ ${t.svgContinueLayer(N)} (${lastC.angleDeg.toFixed(1)}°)`;
+
+        const boxW = measureTextBoxWidth(statusStr, 13, 190, 28);
         const boxH = 28;
 
-        // Candidate positions around the ray tip (lastC.x2, lastC.y2), tested against all placedBoxes & activeRayLines
-        const tipCandidates = isTopReturn
+        // Candidate positions for the green terminal badge, checked against ALL placed angle labels and rays
+        const badgeCandidates = isTopReturn
           ? [
-              { x: lastC.x2 + 16, y: Math.max(10, lastC.y2 - 14) },
-              { x: lastC.x2 - boxW / 2, y: Math.max(8, lastC.y2 - boxH - 12) },
-              { x: W - boxW - 14, y: 12 },
-              { x: lastC.x2 - boxW - 18, y: Math.max(10, lastC.y2 - 14) },
-              { x: 260, y: 12 }
+              { x: lastC.x2 + 16, y: Math.max(10, lastC.y2 - boxH / 2) },
+              { x: lastC.x2 - boxW / 2, y: Math.max(8, lastC.y2 - boxH - 14) },
+              { x: W - boxW - 14, y: 10 },
+              { x: lastC.x1 - boxW - 20, y: 12 },
+              { x: 185, y: 10 }
             ]
           : [
-              { x: lastC.x2 + 16, y: Math.min(H - boxH - 10, lastC.y2 - 14) },
+              { x: lastC.x2 + 16, y: Math.min(H - boxH - 10, lastC.y2 - boxH / 2) },
               { x: lastC.x2 - boxW / 2, y: Math.min(H - boxH - 8, lastC.y2 + 12) },
-              { x: W - boxW - 14, y: H - boxH - 12 },
-              { x: lastC.x2 - boxW - 18, y: Math.min(H - boxH - 10, lastC.y2 - 14) },
-              { x: 260, y: H - boxH - 12 }
+              { x: W - boxW - 14, y: H - boxH - 10 },
+              { x: lastC.x2 - boxW - 18, y: Math.min(H - boxH - 10, lastC.y2 - boxH / 2) },
+              { x: 185, y: H - boxH - 10 }
             ];
 
-        let chosenPos = null;
-        for (const cand of tipCandidates) {
-          const clampedX = Math.min(Math.max(cand.x, 160), W - boxW - 10);
-          const clampedY = Math.min(Math.max(cand.y, 8), H - boxH - 8);
-          const testRect = { x: clampedX, y: clampedY, w: boxW, h: boxH };
-
-          const hitsBox = placedBoxes.some(b => boxesOverlap(testRect, b, 6));
-          const hitsRay = activeRayLines.some(seg => boxHitsLineSegment(testRect, seg, 4));
-          if (!hitsBox && !hitsRay) {
-            chosenPos = testRect;
+        let chosenBadge = null;
+        for (let k = 0; k < badgeCandidates.length; k++) {
+          const cand = badgeCandidates[k];
+          const box = {
+            x: Math.min(Math.max(cand.x, 12), W - boxW - 12),
+            y: Math.min(Math.max(cand.y, 8), H - boxH - 8),
+            w: boxW,
+            h: boxH
+          };
+          const hitBox = placedBoxes.some(b => boxesOverlap(box, b, 5));
+          const hitRay = activeRayLines.some(l => boxHitsLineSegment(box, l.x1, l.y1, l.x2, l.y2, 3));
+          if (!hitBox && !hitRay) {
+            chosenBadge = box;
             break;
           }
         }
 
-        // Fallback if all primary candidates touch a ray: pick the candidate that does not overlap any text box
-        if (!chosenPos) {
-          for (const cand of tipCandidates) {
-            const clampedX = Math.min(Math.max(cand.x, 160), W - boxW - 10);
-            const clampedY = Math.min(Math.max(cand.y, 8), H - boxH - 8);
-            const testRect = { x: clampedX, y: clampedY, w: boxW, h: boxH };
-            if (!placedBoxes.some(b => boxesOverlap(testRect, b, 4))) {
-              chosenPos = testRect;
+        if (!chosenBadge) {
+          for (let k = 0; k < badgeCandidates.length; k++) {
+            const cand = badgeCandidates[k];
+            const box = {
+              x: Math.min(Math.max(cand.x, 12), W - boxW - 12),
+              y: Math.min(Math.max(cand.y, 8), H - boxH - 8),
+              w: boxW,
+              h: boxH
+            };
+            const hitBox = placedBoxes.some(b => boxesOverlap(box, b, 3));
+            if (!hitBox) {
+              chosenBadge = box;
               break;
             }
           }
         }
-        if (!chosenPos) {
-          chosenPos = { x: W - boxW - 12, y: isTopReturn ? 10 : H - boxH - 10, w: boxW, h: boxH };
+
+        if (!chosenBadge) {
+          chosenBadge = {
+            x: W - boxW - 14,
+            y: isTopReturn ? 10 : H - boxH - 10,
+            w: boxW,
+            h: boxH
+          };
         }
 
-        registerBox(chosenPos.x, chosenPos.y, boxW, boxH);
+        placedBoxes.push(chosenBadge);
 
         html += `
-          <g transform="translate(${chosenPos.x}, ${chosenPos.y})">
+          <g transform="translate(${chosenBadge.x}, ${chosenBadge.y})">
             <rect x="0" y="0" width="${boxW}" height="${boxH}" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
             <text x="${boxW / 2}" y="19" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">${statusStr}</text>
           </g>
         `;
       } else if (state.phase === 'setup') {
         const promptStr = `🎯 ${t.svgPendingHint}`;
-        const promptW = measureTextWidth(promptStr, 13.5) + 32;
-        const px = Math.max(12, (W - promptW) / 2);
+        const promptW = measureTextBoxWidth(promptStr, 13.5, 420, 32);
         html += `
-          <g transform="translate(${px}, ${H - 42})">
+          <g transform="translate(${(W - promptW) / 2}, ${H - 42})">
             <rect x="0" y="0" width="${promptW}" height="32" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
             <text x="${promptW / 2}" y="21" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d4ed8">${promptStr}</text>
           </g>
@@ -1717,11 +1818,10 @@
       } else if (state.phase === 'revealing' && visibleSteps < physics.totalSteps) {
         const currVertex = coords[visibleSteps - 1];
         const promptStr = `✏️ ${t.svgStepPrompt}`;
-        const promptW = measureTextWidth(promptStr, 13.5) + 32;
-        const px = Math.max(12, (W - promptW) / 2);
+        const promptW = measureTextBoxWidth(promptStr, 13.5, 320, 32);
         html += `
           <circle cx="${currVertex.x2}" cy="${currVertex.y2}" r="6" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
-          <g transform="translate(${px}, ${H - 42})">
+          <g transform="translate(${(W - promptW) / 2}, ${H - 42})">
             <rect x="0" y="0" width="${promptW}" height="32" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
             <text x="${promptW / 2}" y="21" text-anchor="middle" font-size="13.5" font-weight="700" fill="#92400e">${promptStr}</text>
           </g>
@@ -1731,129 +1831,14 @@
       svg.innerHTML = html;
     }
 
-    // Draws an angle arc and places its pill label so it neither overlaps other labels NOR sits on top of rays
-    function renderSmartAngleArcAndLabel(cx, cy, r, startAngle, endAngle, text, color, quadrant, placedBoxes, activeRayLines, isSmall = false) {
-      const xStart = cx + r * Math.cos(startAngle);
-      const yStart = cy + r * Math.sin(startAngle);
-      const xEnd = cx + r * Math.cos(endAngle);
-      const yEnd = cy + r * Math.sin(endAngle);
-      const midAngle = (startAngle + endAngle) / 2;
-
-      const anchorX = cx + r * Math.cos(midAngle);
-      const anchorY = cy + r * Math.sin(midAngle);
-
-      // Place initial candidate inside the angular wedge or just outside the normal side, away from the ray line
-      const dist = isSmall ? r + 18 : r + 24;
-      let baseTx = cx + dist * Math.cos(midAngle);
-      let baseTy = cy + dist * Math.sin(midAngle);
-
-      // Gentle quadrant nudge to keep labels separated from boundary lines
-      if (quadrant === 'top-left') {
-        baseTy = Math.min(baseTy, cy - 16);
-      } else if (quadrant === 'bottom-right') {
-        baseTy = Math.max(baseTy, cy + 16);
-      } else if (quadrant === 'bottom-left') {
-        baseTy = Math.max(baseTy, cy + 16);
-      } else if (quadrant === 'top-right') {
-        baseTy = Math.min(baseTy, cy - 16);
-      }
-
-      const arcHtml = `<path d="M ${xStart} ${yStart} A ${r} ${r} 0 0 1 ${xEnd} ${yEnd}" fill="none" stroke="${color}" stroke-width="${isSmall ? 1.5 : 2}" stroke-opacity="${isSmall ? 0.75 : 1}" />`;
-      const pillHtml = renderSmartPillLabel(baseTx, baseTy, text, color, placedBoxes, activeRayLines, anchorX, anchorY, isSmall, midAngle, cx, cy);
-
-      return arcHtml + pillHtml;
-    }
-
-    function renderSmartPillLabel(targetCx, targetCy, text, color, placedBoxes, activeRayLines, anchorX, anchorY, isSmall = false, midAngle = null, vCx = 0, vCy = 0) {
-      const w = isSmall ? 44 : 50;
-      const h = isSmall ? 18 : 20;
-
-      // Build candidate offsets: first try bisecting wedge at increasing radii, then left/right of normal
-      const candidates = [
-        [0, 0]
-      ];
-
-      if (midAngle !== null) {
-        for (const extraR of [36, 46, 56]) {
-          candidates.push([
-            vCx + extraR * Math.cos(midAngle) - targetCx,
-            vCy + extraR * Math.sin(midAngle) - targetCy
-          ]);
-        }
-      }
-
-      const fallbackOffsets = [
-        [-22, -8], [22, -8], [-22, 8], [22, 8],
-        [-38, -12], [38, -12], [-38, 12], [38, 12],
-        [-54, -6], [54, -6], [0, -26], [0, 26],
-        [-68, -16], [68, -16], [-68, 16], [68, 16]
-      ];
-      for (const off of fallbackOffsets) {
-        candidates.push(off);
-      }
-
-      let finalCx = targetCx;
-      let finalCy = targetCy;
-      let foundClean = false;
-
-      // Pass 1: Strictly avoid both placedBoxes AND activeRayLines
-      for (const [dx, dy] of candidates) {
-        const cx = Math.min(Math.max(targetCx + dx, 165), 920 - w / 2 - 8);
-        const cy = Math.min(Math.max(targetCy + dy, h / 2 + 6), 520 - h / 2 - 6);
-        const candBox = { x: cx - w / 2, y: cy - h / 2, w, h };
-
-        const hitsBox = placedBoxes.some(b => boxesOverlap(candBox, b, 4));
-        const hitsRay = activeRayLines.some(seg => boxHitsLineSegment(candBox, seg, 3));
-        if (!hitsBox && !hitsRay) {
-          finalCx = cx;
-          finalCy = cy;
-          foundClean = true;
-          break;
-        }
-      }
-
-      // Pass 2: If dense geometry forces touching a ray, still strictly avoid overlapping any text box
-      if (!foundClean) {
-        for (const [dx, dy] of candidates) {
-          const cx = Math.min(Math.max(targetCx + dx, 165), 920 - w / 2 - 8);
-          const cy = Math.min(Math.max(targetCy + dy, h / 2 + 6), 520 - h / 2 - 6);
-          const candBox = { x: cx - w / 2, y: cy - h / 2, w, h };
-          if (!placedBoxes.some(b => boxesOverlap(candBox, b, 3))) {
-            finalCx = cx;
-            finalCy = cy;
-            break;
-          }
-        }
-      }
-
-      placedBoxes.push({ x: finalCx - w / 2, y: finalCy - h / 2, w, h });
-
-      // If shifted noticeably from arc midpoint, draw a subtle leader line back to the arc
-      const distMoved = Math.hypot(finalCx - anchorX, finalCy - anchorY);
-      const leaderHtml = distMoved > 26
-        ? `<line x1="${anchorX}" y1="${anchorY}" x2="${finalCx}" y2="${finalCy}" stroke="${color}" stroke-width="1" stroke-dasharray="2,2" stroke-opacity="0.65" />`
-        : '';
-
-      return `
-        ${leaderHtml}
-        <g transform="translate(${finalCx - w / 2}, ${finalCy - h / 2})">
-          <rect x="0" y="0" width="${w}" height="${h}" rx="4" fill="#ffffff" fill-opacity="0.94" stroke="${color}" stroke-width="${isSmall ? 1 : 1.3}"/>
-          <text x="${w / 2}" y="${isSmall ? 13 : 14.5}" text-anchor="middle" font-size="${isSmall ? 11.5 : 12.5}" font-weight="700" fill="${color}">${text}</text>
-        </g>
-      `;
-    }
-
     // =========================================================================
-    // 5. UI Synchronization & Tab 2 Step-Synced Formula Cards (No Answer Leakage)
+    // 5. UI Synchronization & Tab 2 Step-Synced Formula Cards (No Leakage)
     // =========================================================================
     function updateAllUI() {
       const t = I18N[state.lang];
       const physics = computePhysicsPath();
 
       document.title = t.title;
-      document.documentElement.lang = state.lang === 'zh' ? 'zh-HK' : 'en';
-
-      // Header & Buttons
       document.getElementById('ui-title').textContent = t.title;
       document.getElementById('ui-lang-text').textContent = t.langSwitchBtn;
       document.getElementById('ui-toggle-panel-text').textContent = state.panelCollapsed ? t.expandPanel : t.collapsePanel;
@@ -1899,13 +1884,11 @@
       document.getElementById('btn-next').disabled = !isLockedRevealing;
       document.getElementById('btn-show-all').disabled = isUnlocked;
 
-      // Incident Angle controls: enabled in 'setup' and 'unlocked', locked in 'revealing'
       const disableAngleControls = isLockedRevealing;
       document.getElementById('angle-slider').disabled = disableAngleControls;
       document.getElementById('btn-angle-minus').disabled = disableAngleControls || state.incidentAngle <= 0;
       document.getElementById('btn-angle-plus').disabled = disableAngleControls || state.incidentAngle >= 89;
 
-      // Media & Layer count controls: enabled only in 'setup'
       const disableMediaControls = (state.phase !== 'setup');
       [2, 3].forEach(num => {
         const b = document.getElementById(`btn-layers-${num}`);
@@ -1916,7 +1899,7 @@
         document.getElementById(id).disabled = disableMediaControls;
       });
 
-      // Status Pill & Unlock Banner (No total step count shown during revealing!)
+      // Status Pill & Unlock Banner (No total step count shown during revealing)
       const pill = document.getElementById('status-pill');
       const statusIcon = document.getElementById('status-icon');
       const statusText = document.getElementById('status-text');
@@ -1972,7 +1955,7 @@
       container.innerHTML = html;
     }
 
-    // Only renders cards for boundaries that have ALREADY been revealed (never leaks unrevealed boundaries or card count)
+    // Only renders cards for boundaries that have ALREADY been revealed
     function renderFormulaBoundaryCards(physics) {
       const container = document.getElementById('interface-cards-container');
       const t = I18N[state.lang];
@@ -2072,7 +2055,11 @@
 
     function setLayerCount(count) {
       if (state.phase !== 'setup') return;
+      if (count !== 2 && count !== 3) return;
       state.numLayers = count;
+      while (state.layerMediaIds.length < count) {
+        state.layerMediaIds.push('glass');
+      }
       updateAllUI();
     }
 
@@ -2123,6 +2110,7 @@
 
     // Initialize on load
     window.addEventListener('DOMContentLoaded', () => {
+      document.documentElement.lang = state.lang === 'zh' ? 'zh-HK' : 'en';
       updateAllUI();
     });
   </script>
