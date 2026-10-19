@@ -1,1 +1,1690 @@
 
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>光學折射模擬器（多層介質）</title>
+  <style>
+    :root {
+      --bg-app: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #dbeafe;
+      --accent-green: #16a34a;
+      --accent-green-hover: #15803d;
+      --accent-amber: #d97706;
+      --accent-amber-bg: #fef3c7;
+      --accent-red: #dc2626;
+      --accent-red-bg: #fee2e2;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang HK", "Microsoft JhengHei", sans-serif;
+      --font-serif: "Times New Roman", Times, Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phys-sym {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    /* Top Header */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.65rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .header-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge-dse {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    .app-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .btn-success {
+      background: var(--accent-green);
+      color: #ffffff;
+      border-color: var(--accent-green);
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: var(--accent-green-hover);
+      border-color: var(--accent-green-hover);
+    }
+
+    .btn-lang {
+      background: #f1f5f9;
+      font-weight: 700;
+      border-color: #94a3b8;
+    }
+
+    /* Main Workspace Layout */
+    .workspace {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 0.75rem;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+
+    /* Left Column: Simulator Canvas Area */
+    .canvas-column {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.75rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+
+    /* Top Control Bar inside Canvas Column */
+    .step-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .step-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .step-buttons .btn {
+      font-size: 1rem;
+      padding: 0.55rem 1rem;
+    }
+
+    .status-pill {
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .status-pill.mode-locked {
+      background: var(--accent-amber-bg);
+      color: #92400e;
+      border-color: #fcd34d;
+    }
+
+    .status-pill.mode-unlocked {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
+    }
+
+    /* Unlock Banner */
+    .unlock-banner {
+      display: none;
+      background: #ecfdf5;
+      border: 2px solid #10b981;
+      color: #065f46;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      align-items: center;
+      gap: 0.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .unlock-banner.visible {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SVG Container */
+    .svg-container {
+      width: 100%;
+      flex: 1;
+      min-height: 360px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #optics-svg {
+      width: 100%;
+      height: auto;
+      max-height: 68vh;
+      display: block;
+      user-select: none;
+    }
+
+    /* Quick Angle Bar Below Canvas (for handy operation on mobile & whiteboard) */
+    .quick-angle-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
+    }
+
+    .angle-label-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .angle-readout {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.15rem 0.6rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      min-width: 3.6rem;
+      text-align: center;
+    }
+
+    .slider-control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .btn-step-angle {
+      width: 2.4rem;
+      height: 2.4rem;
+      padding: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-radius: 8px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      height: 8px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    input[type="range"]:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Right Column: Foldable Side Panel */
+    .side-panel {
+      width: 410px;
+      flex-shrink: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+      transition: width 0.2s ease;
+    }
+
+    .side-panel.collapsed {
+      display: none;
+    }
+
+    /* Tabs */
+    .tab-header {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      background: #f1f5f9;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem 0.5rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: #e2e8f0;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      background: var(--bg-card);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+      padding: 1rem;
+      overflow-y: auto;
+      flex: 1;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* Form Controls inside Tab 1 */
+    .control-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .layer-count-btns {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .layer-count-btn {
+      flex: 1;
+      padding: 0.45rem;
+      font-weight: 700;
+    }
+
+    .layer-count-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .media-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .media-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+    }
+
+    .media-item-label {
+      font-weight: 700;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-width: 90px;
+    }
+
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.2);
+      display: inline-block;
+    }
+
+    .media-select {
+      flex: 1;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.4rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #94a3b8;
+      background: #fff;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .media-select:disabled {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .preset-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .preset-btn {
+      text-align: left;
+      justify-content: flex-start;
+      font-size: 0.88rem;
+      padding: 0.45rem 0.65rem;
+    }
+
+    /* Tab 2: Formulas & Critical Angle Cards */
+    .formula-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .formula-equation {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 0.35rem;
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #dbeafe;
+    }
+
+    .interface-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .interface-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .interface-card-header {
+      background: #f1f5f9;
+      padding: 0.45rem 0.75rem;
+      font-weight: 700;
+      font-size: 0.92rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .interface-card-body {
+      padding: 0.65rem 0.75rem;
+      font-size: 0.92rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .hidden-data-badge {
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      color: var(--text-muted);
+      padding: 0.6rem;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .tir-tag {
+      background: var(--accent-red-bg);
+      color: var(--accent-red);
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .refract-tag {
+      background: #dcfce7;
+      color: #166534;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      padding: 0.25rem 0.4rem;
+      align-items: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+    }
+
+    .legend-line {
+      width: 22px;
+      height: 3px;
+      display: inline-block;
+      border-radius: 2px;
+    }
+
+    /* Responsive Breakpoints (Tablet & Mobile Portrait) */
+    @media (max-width: 980px) {
+      .workspace {
+        flex-direction: column;
+        padding: 0.5rem;
+      }
+      .side-panel {
+        width: 100%;
+      }
+      #optics-svg {
+        max-height: 52vh;
+      }
+      .svg-container {
+        min-height: 290px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .app-header {
+        padding: 0.5rem 0.65rem;
+      }
+      .app-title {
+        font-size: 1.05rem;
+      }
+      .canvas-column {
+        padding: 0.55rem;
+        gap: 0.5rem;
+      }
+      .step-buttons .btn {
+        font-size: 0.92rem;
+        padding: 0.45rem 0.7rem;
+        flex: 1;
+      }
+      .step-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .status-pill {
+        justify-content: center;
+      }
+      .svg-container {
+        min-height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-title-wrap">
+      <span class="badge-dse">HKDSE Physics</span>
+      <h1 class="app-title" id="ui-title">光學折射模擬器（多層介質）</h1>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn" id="btn-toggle-panel" onclick="toggleSidePanel()">
+        <span id="ui-toggle-panel-icon">📐</span>
+        <span id="ui-toggle-panel-text">收起面板</span>
+      </button>
+      <button type="button" class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
+        🌐 <span id="ui-lang-text">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="workspace">
+    <!-- Left Column: Simulator Canvas & Step Controls -->
+    <section class="canvas-column">
+      <!-- Step Reveal Controls -->
+      <div class="step-toolbar">
+        <div class="step-buttons">
+          <button type="button" class="btn btn-primary" id="btn-start" onclick="handleStart()">
+            ▶ <span id="ui-btn-start">開始</span>
+          </button>
+          <button type="button" class="btn btn-success" id="btn-next" onclick="handleNextStep()" disabled>
+            ⏭ <span id="ui-btn-next">下一步</span>
+          </button>
+          <button type="button" class="btn" id="btn-show-all" onclick="handleShowAll()">
+            ⏩ <span id="ui-btn-show-all">全部顯示</span>
+          </button>
+          <button type="button" class="btn" id="btn-reset" onclick="handleReset()">
+            🔄 <span id="ui-btn-reset">重設</span>
+          </button>
+        </div>
+        <div class="status-pill" id="status-pill">
+          <span id="status-icon">⚙️</span>
+          <span id="status-text">初始設定階段（可自由修改參數）</span>
+        </div>
+      </div>
+
+      <!-- Unlocked Exploration Banner -->
+      <div class="unlock-banner" id="unlock-banner">
+        <span>💡</span>
+        <span id="ui-unlock-msg">完整光路已揭曉！你現在可以拉動入射角滑桿，動態觀察光路變化及何時觸發全內反射；或按「重設」開始新題目。</span>
+      </div>
+
+      <!-- Inline SVG Canvas -->
+      <div class="svg-container">
+        <svg id="optics-svg" viewBox="0 0 920 520" preserveAspectRatio="xMidYMid meet" aria-label="Optics Ray Diagram"></svg>
+      </div>
+
+      <!-- Quick Incident Angle Slider Bar (Always Accessible below Canvas) -->
+      <div class="quick-angle-bar">
+        <div class="angle-label-group">
+          <span id="ui-angle-label">第一層入射角</span>
+          <span class="phys-sym">θ₁</span>:
+          <span class="angle-readout" id="angle-display">40°</span>
+        </div>
+        <div class="slider-control-group">
+          <button type="button" class="btn btn-step-angle" id="btn-angle-minus" onclick="adjustAngle(-1)" aria-label="Decrease Angle">−</button>
+          <input type="range" id="angle-slider" min="0" max="89" step="1" value="40" oninput="onAngleSliderChange(this.value)">
+          <button type="button" class="btn btn-step-angle" id="btn-angle-plus" onclick="adjustAngle(1)" aria-label="Increase Angle">+</button>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend-bar">
+        <div class="legend-item">
+          <span class="legend-line" style="background:#dc2626;"></span>
+          <span id="ui-legend-down">向下入射／折射光路</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-line" style="background:#7c3aed;"></span>
+          <span id="ui-legend-up">全內反射 (TIR) 折返光路</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-line" style="border-top:2px dashed #475569; background:transparent;"></span>
+          <span id="ui-legend-normal">法線</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Foldable Side Panel with 2 Tabs -->
+    <aside class="side-panel" id="side-panel">
+      <div class="tab-header">
+        <button type="button" class="tab-btn active" id="tab-btn-settings" onclick="switchTab('settings')">
+          ⚙️ <span id="ui-tab-settings">介質與角度設定</span>
+        </button>
+        <button type="button" class="tab-btn" id="tab-btn-formulas" onclick="switchTab('formulas')">
+          📐 <span id="ui-tab-formulas">折射公式與臨界角</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Media & Angle Settings -->
+      <div class="tab-content active" id="tab-settings">
+        <!-- Number of layers -->
+        <div class="control-section">
+          <div class="section-title">
+            <span id="ui-layer-count-title">平行介質層數</span>
+          </div>
+          <div class="layer-count-btns">
+            <button type="button" class="btn layer-count-btn" id="btn-layers-2" onclick="setLayerCount(2)">2</button>
+            <button type="button" class="btn layer-count-btn active" id="btn-layers-3" onclick="setLayerCount(3)">3</button>
+            <button type="button" class="btn layer-count-btn" id="btn-layers-4" onclick="setLayerCount(4)">4</button>
+          </div>
+        </div>
+
+        <!-- Media selection dropdowns -->
+        <div class="control-section">
+          <div class="section-title">
+            <span id="ui-media-select-title">各層介質選擇（由上至下）</span>
+          </div>
+          <div class="media-list" id="media-list-container"></div>
+        </div>
+
+        <!-- Quick Teaching Presets -->
+        <div class="control-section">
+          <div class="section-title">
+            <span id="ui-presets-title">課堂常用探究情境（一鍵套用）</span>
+          </div>
+          <div class="preset-group">
+            <button type="button" class="btn preset-btn" id="preset-1" onclick="applyPreset(1)">
+              1. 平行夾心層驗證（空氣 → 水 → 玻璃 → 空氣）
+            </button>
+            <button type="button" class="btn preset-btn" id="preset-2" onclick="applyPreset(2)">
+              2. 光密入光疏觸發全內反射（玻璃 → 水 → 空氣）
+            </button>
+            <button type="button" class="btn preset-btn" id="preset-3" onclick="applyPreset(3)">
+              3. 高折射率鑽石夾層（空氣 → 鑽石 → 水）
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Formulas & Critical Angles -->
+      <div class="tab-content" id="tab-formulas">
+        <div class="formula-box">
+          <div class="section-title" id="ui-snell-title">斯涅爾定律</div>
+          <div class="formula-equation">
+            <span class="phys-sym">n</span>₁ sin<span class="phys-sym">θ</span>₁ = <span class="phys-sym">n</span>₂ sin<span class="phys-sym">θ</span>₂ = <span class="phys-sym">n</span>₃ sin<span class="phys-sym">θ</span>₃ = …
+          </div>
+          <div style="font-size:0.86rem; color:var(--text-muted);" id="ui-snell-desc">
+            在多層平行介質中，相鄰界面的折射角與下一界面的入射角相等（內錯角相等），因此頂層與底層只取決於首尾介質折射率。
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <div class="section-title" id="ui-crit-title">全內反射與臨界角公式</div>
+          <div class="formula-equation">
+            sin <span class="phys-sym">c</span> = <span class="phys-sym">n</span>₂ / <span class="phys-sym">n</span>₁ &nbsp; (<span class="phys-sym">n</span>₁ &gt; <span class="phys-sym">n</span>₂)
+          </div>
+          <div style="font-size:0.86rem; color:var(--text-muted);" id="ui-crit-desc">
+            當光線由光密介質（較大 <span class="phys-sym">n</span>₁）射向光疏介質（較小 <span class="phys-sym">n</span>₂）且入射角 <span class="phys-sym">θ</span> &gt; <span class="phys-sym">c</span> 時，會觸發全內反射（TIR）。
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:0.2rem;">
+          <span id="ui-calc-list-title">各界面臨界角與計算結果（隨步驟解鎖）</span>
+        </div>
+        <div class="interface-cards" id="interface-cards-container"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // =========================================================================
+    // 1. Dictionary & Media Data (Pure Bilingual Support: zh-HK or en)
+    // =========================================================================
+    const MEDIA_CATALOG = [
+      { id: 'air',     n: 1.00, zh: '空氣',     en: 'Air',     fill: '#f8fafc', badgeBg: '#e2e8f0' },
+      { id: 'water',   n: 1.33, zh: '水',       en: 'Water',   fill: '#e0f2fe', badgeBg: '#bae6fd' },
+      { id: 'acrylic', n: 1.49, zh: '亞加力膠', en: 'Acrylic', fill: '#fef3c7', badgeBg: '#fde68a' },
+      { id: 'glass',   n: 1.52, zh: '玻璃',     en: 'Glass',   fill: '#dcfce7', badgeBg: '#bbf7d0' },
+      { id: 'diamond', n: 2.42, zh: '鑽石',     en: 'Diamond', fill: '#f3e8ff', badgeBg: '#e9d5ff' }
+    ];
+
+    const I18N = {
+      zh: {
+        title: '光學折射模擬器（多層介質）',
+        langSwitchBtn: 'EN',
+        collapsePanel: '收起面板',
+        expandPanel: '展開面板',
+        btnStart: '開始',
+        btnNext: '下一步',
+        btnShowAll: '全部顯示',
+        btnReset: '重設',
+        statusSetup: '初始設定階段（請選擇介質與角度，按「開始」鎖定並預測）',
+        statusRevealing: (curr, total) => `逐段驗證模式（進度：第 ${curr} / ${total} 步，參數已鎖定）`,
+        statusUnlocked: '完整光路已揭曉（滑桿已解鎖，可動態探索臨界角）',
+        unlockBanner: '完整光路已揭曉！你現在可以拉動入射角滑桿，動態觀察光路變化及何時觸發全內反射；或按「重設」開始新題目。',
+        angleLabel: '第一層入射角',
+        legendDown: '向下入射／折射光路',
+        legendUp: '全內反射 (TIR) 折返光路',
+        legendNormal: '法線',
+        tabSettings: '介質與角度設定',
+        tabFormulas: '折射公式與臨界角',
+        layerCountTitle: '平行介質層數',
+        layerCountUnit: (num) => `${num} 層`,
+        mediaSelectTitle: '各層介質選擇（由上至下）',
+        layerName: (idx) => `第 ${idx} 層`,
+        presetsTitle: '課堂常用探究情境（一鍵套用）',
+        preset1: '1. 平行夾心層驗證（空氣 → 水 → 玻璃 → 空氣）',
+        preset2: '2. 光密入光疏觸發全內反射（玻璃 → 水 → 空氣）',
+        preset3: '3. 高折射率鑽石夾層（空氣 → 鑽石 → 水）',
+        snellTitle: '斯涅爾定律',
+        snellDesc: '在多層平行介質中，相鄰界面的折射角與下一界面的入射角相等（內錯角相等），因此最終射出角度與首層滿足 n₁ sinθ₁ = nₖ sinθₖ。',
+        critTitle: '全內反射與臨界角公式',
+        critDesc: '當光線由光密介質（較大 n）射向光疏介質（較小 n）且入射角大於臨界角 c 時，會觸發全內反射（TIR）。',
+        calcListTitle: '各界面臨界角與計算結果（隨步驟解鎖）',
+        interfaceTitle: (i, j) => `界面 ${i}–${j}（第 ${i} 層 → 第 ${j} 層）`,
+        interfaceReturnTitle: (i, j) => `折返界面 ${i}–${j}（第 ${i} 層 → 第 ${j} 層）`,
+        pendingReveal: '🔒 待揭曉（請按「開始」或「下一步」解鎖此界面數據）',
+        critAngleLabel: '臨界角',
+        noCritAngle: '不適用（光疏 → 光密，不會發生全內反射）',
+        incAngleLabel: '入射角',
+        refAngleLabel: '折射角',
+        reflAngleLabel: '反射角',
+        statusTIR: '全內反射 (TIR)',
+        statusRefract: '發生折射',
+        svgPendingHint: '已設定初始參數 — 請按上方「開始」鎖定參數並逐步驗證光路',
+        svgStepPrompt: '請預測下一段光路，再按「下一步」核對',
+        svgTirLabel: '全內反射 (TIR)',
+        svgEmergentBottom: '由底層射出',
+        svgEmergentTop: '對稱折返由頂層射出'
+      },
+      en: {
+        title: 'Optics Refraction Simulator (Multi-layer Media)',
+        langSwitchBtn: '繁',
+        collapsePanel: 'Hide Panel',
+        expandPanel: 'Show Panel',
+        btnStart: 'Start',
+        btnNext: 'Next Step',
+        btnShowAll: 'Show All',
+        btnReset: 'Reset',
+        statusSetup: 'Setup Mode (Select media & angle, then click "Start" to lock & predict)',
+        statusRevealing: (curr, total) => `Step-by-Step Verification (Step ${curr} / ${total}, Parameters Locked)`,
+        statusUnlocked: 'Full Ray Path Revealed (Slider unlocked for dynamic exploration)',
+        unlockBanner: 'Full ray path revealed! You can now drag the incident angle slider to dynamically observe the ray path and Total Internal Reflection (TIR), or click "Reset" for a new question.',
+        angleLabel: 'Layer 1 Incident Angle',
+        legendDown: 'Downward Incident / Refracted Ray',
+        legendUp: 'Upward Reflected / Refracted Ray (After TIR)',
+        legendNormal: 'Normal',
+        tabSettings: 'Media & Angle Setup',
+        tabFormulas: 'Formulas & Critical Angles',
+        layerCountTitle: 'Number of Parallel Layers',
+        layerCountUnit: (num) => `${num} Layers`,
+        mediaSelectTitle: 'Media Selection (Top to Bottom)',
+        layerName: (idx) => `Layer ${idx}`,
+        presetsTitle: 'Quick Teaching Presets',
+        preset1: '1. Parallel Sandwich Layer (Air → Water → Glass → Air)',
+        preset2: '2. Dense to Less Dense TIR (Glass → Water → Air)',
+        preset3: '3. High-Index Diamond Core (Air → Diamond → Water)',
+        snellTitle: "Snell's Law",
+        snellDesc: 'In parallel layers, the angle of refraction at one boundary equals the angle of incidence at the next boundary (alternate angles). Thus n₁ sinθ₁ = nₖ sinθₖ.',
+        critTitle: 'Total Internal Reflection & Critical Angle',
+        critDesc: 'When light travels from an optically denser medium (larger n) to a less dense medium (smaller n) with incident angle θ > c, Total Internal Reflection (TIR) occurs.',
+        calcListTitle: 'Boundary Critical Angles & Calculations (Unlocked Step-by-Step)',
+        interfaceTitle: (i, j) => `Boundary ${i}–${j} (Layer ${i} → Layer ${j})`,
+        interfaceReturnTitle: (i, j) => `Return Boundary ${i}–${j} (Layer ${i} → Layer ${j})`,
+        pendingReveal: '🔒 Pending Reveal (Click "Start" or "Next Step" to unlock)',
+        critAngleLabel: 'Critical Angle',
+        noCritAngle: 'N/A (Less dense → Denser, no TIR possible)',
+        incAngleLabel: 'Incident Angle',
+        refAngleLabel: 'Refracted Angle',
+        reflAngleLabel: 'Reflected Angle',
+        statusTIR: 'Total Internal Reflection (TIR)',
+        statusRefract: 'Refraction',
+        svgPendingHint: 'Parameters ready — Click "Start" above to lock parameters and verify step-by-step',
+        svgStepPrompt: 'Predict the next ray segment, then click "Next Step" to verify',
+        svgTirLabel: 'Total Internal Reflection (TIR)',
+        svgEmergentBottom: 'Emerges from Bottom',
+        svgEmergentTop: 'Emerges Symmetrically from Top'
+      }
+    };
+
+    // =========================================================================
+    // 2. Application State
+    // =========================================================================
+    const state = {
+      lang: 'zh',
+      numLayers: 3,
+      layerMediaIds: ['air', 'water', 'glass', 'air'],
+      incidentAngle: 40,
+      // phase: 'setup' | 'revealing' | 'unlocked'
+      phase: 'setup',
+      revealedStep: 0,
+      panelCollapsed: false,
+      activeTab: 'settings'
+    };
+
+    function getMediumById(id) {
+      return MEDIA_CATALOG.find(m => m.id === id) || MEDIA_CATALOG[0];
+    }
+
+    // =========================================================================
+    // 3. Physics Engine: Multi-Layer Ray Tracing & Symmetry Calculation
+    // =========================================================================
+    /**
+     * Computes the complete sequence of ray segments and boundary interactions.
+     * Step 1: Incident ray in Layer 1 hitting Boundary 1-2 + Normal at Boundary 1-2
+     * Subsequent steps: Each refraction or TIR reflection segment one by one.
+     */
+    function computePhysicsPath() {
+      const N = state.numLayers;
+      const layers = [];
+      for (let i = 0; i < N; i++) {
+        layers.push(getMediumById(state.layerMediaIds[i]));
+      }
+
+      const theta1Deg = state.incidentAngle;
+      const theta1Rad = (theta1Deg * Math.PI) / 180;
+      const n1 = layers[0].n;
+      // Invariant across all parallel boundaries: K = n_1 * sin(theta_1)
+      const snellInvariant = n1 * Math.sin(theta1Rad);
+
+      // Compute angles in each layer if light reaches it
+      const segments = [];
+      const boundaries = [];
+
+      // Step 1 is always the initial incident ray in Layer 1 (index 0)
+      segments.push({
+        stepIndex: 1,
+        type: 'incident',
+        direction: 'down',
+        layerIndex: 0,
+        angleDeg: theta1Deg,
+        angleRad: theta1Rad
+      });
+
+      let tirOccurred = false;
+      let tirBoundaryIndex = -1; // boundary between k and k+1 (0-based)
+
+      // Downward traversal across boundaries 0 .. N-2
+      for (let k = 0; k < N - 1; k++) {
+        const medUpper = layers[k];
+        const medLower = layers[k + 1];
+        const incDeg = segments[segments.length - 1].angleDeg;
+        const incRad = segments[segments.length - 1].angleRad;
+
+        // Check critical angle condition
+        let critDeg = null;
+        if (medUpper.n > medLower.n) {
+          const ratio = medLower.n / medUpper.n;
+          critDeg = (Math.asin(Math.min(1, ratio)) * 180) / Math.PI;
+        }
+
+        // Check if sin(theta_next) = snellInvariant / medLower.n > 1 (or >= 1 when theta > 0)
+        const sinNext = snellInvariant / medLower.n;
+        // Strict physical check: TIR occurs when n_upper > n_lower and incDeg >= critDeg (with small float tolerance)
+        const isTIR = (medUpper.n > medLower.n) && (sinNext >= 1.0 - 1e-9 || (critDeg !== null && incDeg >= critDeg - 1e-7));
+
+        if (!isTIR) {
+          const refRad = Math.asin(Math.min(1, sinNext));
+          const refDeg = (refRad * 180) / Math.PI;
+          const stepNum = segments.length + 1;
+
+          boundaries.push({
+            stepIndex: stepNum,
+            direction: 'down',
+            fromLayer: k + 1,
+            toLayer: k + 2,
+            n1: medUpper.n,
+            n2: medLower.n,
+            critDeg: critDeg,
+            incDeg: incDeg,
+            outDeg: refDeg,
+            isTIR: false
+          });
+
+          segments.push({
+            stepIndex: stepNum,
+            type: 'refract_down',
+            direction: 'down',
+            layerIndex: k + 1,
+            angleDeg: refDeg,
+            angleRad: refRad,
+            boundaryInfo: boundaries[boundaries.length - 1]
+          });
+        } else {
+          // Total Internal Reflection at boundary k (between layer k and k+1)
+          tirOccurred = true;
+          tirBoundaryIndex = k;
+          const stepNum = segments.length + 1;
+
+          boundaries.push({
+            stepIndex: stepNum,
+            direction: 'tir',
+            fromLayer: k + 1,
+            toLayer: k + 2,
+            n1: medUpper.n,
+            n2: medLower.n,
+            critDeg: critDeg,
+            incDeg: incDeg,
+            outDeg: incDeg,
+            isTIR: true
+          });
+
+          segments.push({
+            stepIndex: stepNum,
+            type: 'tir_reflect',
+            direction: 'up',
+            layerIndex: k,
+            angleDeg: incDeg,
+            angleRad: incRad,
+            boundaryInfo: boundaries[boundaries.length - 1]
+          });
+          break;
+        }
+      }
+
+      // If TIR occurred at boundary k, trace upward symmetric path from layer k back to layer 0
+      if (tirOccurred && tirBoundaryIndex > 0) {
+        for (let m = tirBoundaryIndex; m >= 1; m--) {
+          const medLower = layers[m];
+          const medUpper = layers[m - 1];
+          const incDeg = segments[segments.length - 1].angleDeg;
+
+          // By parallel symmetry, the angle in layer (m-1) is identical to the downward angle in layer (m-1)
+          const sinUpper = snellInvariant / medUpper.n;
+          const refRad = Math.asin(Math.min(1, sinUpper));
+          const refDeg = (refRad * 180) / Math.PI;
+          const stepNum = segments.length + 1;
+
+          let critDegUp = null;
+          if (medLower.n > medUpper.n) {
+            critDegUp = (Math.asin(Math.min(1, medUpper.n / medLower.n)) * 180) / Math.PI;
+          }
+
+          const bInfo = {
+            stepIndex: stepNum,
+            direction: 'up',
+            fromLayer: m + 1,
+            toLayer: m,
+            n1: medLower.n,
+            n2: medUpper.n,
+            critDeg: critDegUp,
+            incDeg: incDeg,
+            outDeg: refDeg,
+            isTIR: false
+          };
+
+          boundaries.push(bInfo);
+
+          segments.push({
+            stepIndex: stepNum,
+            type: 'refract_up',
+            direction: 'up',
+            layerIndex: m - 1,
+            angleDeg: refDeg,
+            angleRad: refRad,
+            boundaryInfo: bInfo
+          });
+        }
+      }
+
+      return {
+        layers,
+        segments,
+        boundaries,
+        totalSteps: segments.length,
+        tirOccurred,
+        tirBoundaryIndex
+      };
+    }
+
+    // =========================================================================
+    // 4. SVG Rendering Engine (Dynamic Scaling, Anti-Overlap Labels, Bilingual)
+    // =========================================================================
+    function renderSVG(physics) {
+      const svg = document.getElementById('optics-svg');
+      const t = I18N[state.lang];
+      const W = 920;
+      const H = 520;
+      const N = state.numLayers;
+      const layerH = H / N;
+
+      // Determine how many steps are visible
+      let visibleSteps = 0;
+      if (state.phase === 'setup') {
+        visibleSteps = 1; // In setup, show preview of incident ray in Layer 1 up to first boundary
+      } else if (state.phase === 'revealing') {
+        visibleSteps = state.revealedStep;
+      } else {
+        visibleSteps = physics.totalSteps;
+      }
+
+      // Compute horizontal geometry so the entire ray path always fits cleanly inside [175, W-45]
+      // First calculate raw horizontal displacements (dx) for all segments assuming unit layerH
+      const rawDxList = physics.segments.map(seg => {
+        // Use tan(angle), capped so 89 deg doesn't blow up to infinity visually while preserving monotonic angle appearance
+        const effRad = Math.min(seg.angleRad, (81.5 * Math.PI) / 180);
+        return Math.tan(effRad) * layerH;
+      });
+
+      const totalRawDx = rawDxList.reduce((acc, val) => acc + val, 0);
+      const startXBase = 195;
+      const maxAvailableSpan = W - startXBase - 65;
+
+      // Scale horizontal dx uniformly if extremely wide angle + return path exceeds canvas width
+      const horizScale = totalRawDx > maxAvailableSpan ? (maxAvailableSpan / totalRawDx) : 1.0;
+
+      // Build coordinates for each segment
+      const coords = [];
+      let currX = startXBase;
+      let currY = 0;
+
+      for (let i = 0; i < physics.segments.length; i++) {
+        const seg = physics.segments[i];
+        const dx = rawDxList[i] * horizScale;
+        let nextX = currX + dx;
+        let nextY = seg.direction === 'down'
+          ? (seg.layerIndex + 1) * layerH
+          : seg.layerIndex * layerH;
+
+        coords.push({
+          ...seg,
+          x1: currX,
+          y1: currY,
+          x2: nextX,
+          y2: nextY
+        });
+
+        currX = nextX;
+        currY = nextY;
+      }
+
+      let html = `
+        <defs>
+          <marker id="arrow-down" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#dc2626"/>
+          </marker>
+          <marker id="arrow-up" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#7c3aed"/>
+          </marker>
+        </defs>
+      `;
+
+      // 1. Draw Layer Backgrounds & Left Media Badges
+      for (let i = 0; i < N; i++) {
+        const med = physics.layers[i];
+        const yTop = i * layerH;
+        const medName = state.lang === 'zh' ? med.zh : med.en;
+
+        html += `
+          <rect x="0" y="${yTop}" width="${W}" height="${layerH}" fill="${med.fill}" />
+          <!-- Left Layer Label Card -->
+          <g transform="translate(14, ${yTop + 14})">
+            <rect x="0" y="0" width="142" height="54" rx="8" fill="#ffffff" fill-opacity="0.92" stroke="#cbd5e1" stroke-width="1.2"/>
+            <text x="12" y="22" font-size="14" font-weight="700" fill="#0f172a">${t.layerName(i + 1)}: ${medName}</text>
+            <text x="12" y="43" font-size="14" font-weight="700" fill="#2563eb">
+              <tspan font-family="Times New Roman, serif" font-style="italic">n</tspan><tspan font-size="11" dy="3">${i + 1}</tspan><tspan dy="-3"> = ${med.n.toFixed(2)}</tspan>
+            </text>
+          </g>
+        `;
+
+        if (i > 0) {
+          html += `<line x1="0" y1="${yTop}" x2="${W}" y2="${yTop}" stroke="#64748b" stroke-width="2" />`;
+        }
+      }
+
+      // 2. Draw Normals, Angle Arcs, Rays & Labels for Visible Steps
+      const normalHalfLen = Math.min(layerH * 0.44, 58);
+      const arcRadius = Math.min(layerH * 0.28, 36);
+
+      for (let i = 0; i < visibleSteps && i < coords.length; i++) {
+        const c = coords[i];
+        const isUp = c.direction === 'up';
+        const rayColor = isUp ? '#7c3aed' : '#dc2626';
+        const arrowId = isUp ? 'arrow-up' : 'arrow-down';
+
+        // Midpoint point for arrow marker so arrow sits cleanly in the middle of the segment
+        const midX = (c.x1 + c.x2) / 2;
+        const midY = (c.y1 + c.y2) / 2;
+
+        // Draw Ray Segment (in two halves so arrowhead is at center of segment)
+        html += `
+          <line x1="${c.x1}" y1="${c.y1}" x2="${midX}" y2="${midY}" stroke="${rayColor}" stroke-width="3.4" stroke-linecap="round" marker-end="url(#${arrowId})" />
+          <line x1="${midX}" y1="${midY}" x2="${c.x2}" y2="${c.y2}" stroke="${rayColor}" stroke-width="3.4" stroke-linecap="round" />
+        `;
+
+        // Draw Normal & Incident Angle at the end of Step 1 (or any boundary vertex)
+        // Vertex at (c.x2, c.y2) if this segment hits an internal boundary
+        const hitsInternalBoundary = (c.direction === 'down' && c.layerIndex < N - 1) || (c.direction === 'up' && c.layerIndex > 0);
+
+        if (hitsInternalBoundary) {
+          // Draw Normal line at (c.x2, c.y2)
+          html += `
+            <line x1="${c.x2}" y1="${c.y2 - normalHalfLen}" x2="${c.x2}" y2="${c.y2 + normalHalfLen}"
+                  stroke="#334155" stroke-width="1.8" stroke-dasharray="5,4" />
+          `;
+
+          // Draw Incident Angle Arc & Label approaching (c.x2, c.y2)
+          if (c.angleDeg > 0.3) {
+            const rayAngleFromVertical = Math.atan2(c.x2 - c.x1, Math.abs(c.y2 - c.y1));
+            if (c.direction === 'down') {
+              // Ray comes from top-left into (c.x2, c.y2); Normal goes straight UP (0 deg from -Y)
+              html += renderAngleArcAndText(
+                c.x2, c.y2,
+                arcRadius,
+                -Math.PI / 2 - rayAngleFromVertical,
+                -Math.PI / 2,
+                `${c.angleDeg.toFixed(1)}°`,
+                '#b91c1c',
+                -22, -12
+              );
+            } else {
+              // Upward ray comes from bottom-left into (c.x2, c.y2); Normal goes straight DOWN (+Y)
+              html += renderAngleArcAndText(
+                c.x2, c.y2,
+                arcRadius,
+                Math.PI / 2,
+                Math.PI / 2 + rayAngleFromVertical,
+                `${c.angleDeg.toFixed(1)}°`,
+                '#6d28d9',
+                -24, 18
+              );
+            }
+          } else {
+            // 0 deg label
+            const yOff = c.direction === 'down' ? -24 : 26;
+            html += renderPillText(c.x2 - 28, c.y2 + yOff, '0.0°', c.direction === 'down' ? '#b91c1c' : '#6d28d9');
+          }
+        }
+
+        // Draw Departure Angle (Refracted or TIR Reflected) at the start of segment i >= 1 at vertex (c.x1, c.y1)
+        if (i >= 1) {
+          const rayAngleFromVertical = Math.atan2(c.x2 - c.x1, Math.abs(c.y2 - c.y1));
+          if (c.type === 'refract_down') {
+            // Refracted downward from (c.x1, c.y1): between +Y normal (PI/2) and ray (PI/2 - angle)
+            if (c.angleDeg > 0.3) {
+              html += renderAngleArcAndText(
+                c.x1, c.y1,
+                arcRadius,
+                Math.PI / 2 - rayAngleFromVertical,
+                Math.PI / 2,
+                `${c.angleDeg.toFixed(1)}°`,
+                '#15803d',
+                24, 18
+              );
+            } else {
+              html += renderPillText(c.x1 + 26, c.y1 + 26, '0.0°', '#15803d');
+            }
+          } else if (c.type === 'tir_reflect') {
+            // TIR reflected upward from (c.x1, c.y1): between -Y normal (-PI/2) and ray (-PI/2 + angle)
+            html += renderAngleArcAndText(
+              c.x1, c.y1,
+              arcRadius,
+              -Math.PI / 2,
+              -Math.PI / 2 + rayAngleFromVertical,
+              `${c.angleDeg.toFixed(1)}°`,
+              '#7c3aed',
+              26, -12
+            );
+
+            // Prominent TIR Badge below the reflection vertex
+            const badgeW = state.lang === 'zh' ? 138 : 225;
+            html += `
+              <g transform="translate(${c.x1 - badgeW / 2}, ${c.y1 + 14})">
+                <rect x="0" y="0" width="${badgeW}" height="28" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.8"/>
+                <text x="${badgeW / 2}" y="19" text-anchor="middle" font-size="13" font-weight="700" fill="#b91c1c">⚡ ${t.svgTirLabel}</text>
+              </g>
+            `;
+          } else if (c.type === 'refract_up') {
+            // Refracted upward from (c.x1, c.y1): between -Y normal (-PI/2) and ray (-PI/2 + angle)
+            if (c.angleDeg > 0.3) {
+              html += renderAngleArcAndText(
+                c.x1, c.y1,
+                arcRadius,
+                -Math.PI / 2,
+                -Math.PI / 2 + rayAngleFromVertical,
+                `${c.angleDeg.toFixed(1)}°`,
+                '#6d28d9',
+                26, -12
+              );
+            }
+          }
+        }
+      }
+
+      // 3. If Full Path is Revealed, show emergent badge at the exit point
+      if (visibleSteps >= physics.totalSteps && coords.length > 0) {
+        const lastC = coords[coords.length - 1];
+        const isTopExit = lastC.direction === 'up';
+        const exitText = `${ isTopExit ? t.svgEmergentTop : t.svgEmergentBottom } (${lastC.angleDeg.toFixed(1)}°)`;
+        const boxW = state.lang === 'zh' ? 215 : 275;
+        const boxX = Math.min(Math.max(lastC.x2 - boxW / 2, 165), W - boxW - 12);
+        const boxY = isTopExit ? 10 : H - 38;
+
+        html += `
+          <g transform="translate(${boxX}, ${boxY})">
+            <rect x="0" y="0" width="${boxW}" height="28" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="${boxW / 2}" y="19" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">✓ ${exitText}</text>
+          </g>
+        `;
+      } else if (state.phase === 'setup') {
+        // Setup prompt banner inside SVG bottom
+        const promptW = state.lang === 'zh' ? 490 : 560;
+        html += `
+          <g transform="translate(${(W - promptW) / 2}, ${H - 44})">
+            <rect x="0" y="0" width="${promptW}" height="32" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="${promptW / 2}" y="21" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d4ed8">🎯 ${t.svgPendingHint}</text>
+          </g>
+        `;
+      } else if (state.phase === 'revealing' && visibleSteps < physics.totalSteps) {
+        // Question mark indicator at the active vertex to invite whiteboard prediction
+        const currVertex = coords[visibleSteps - 1];
+        const promptW = state.lang === 'zh' ? 340 : 410;
+        html += `
+          <circle cx="${currVertex.x2}" cy="${currVertex.y2}" r="6" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
+          <g transform="translate(${(W - promptW) / 2}, ${H - 44})">
+            <rect x="0" y="0" width="${promptW}" height="32" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="${promptW / 2}" y="21" text-anchor="middle" font-size="13.5" font-weight="700" fill="#92400e">✏️ ${t.svgStepPrompt}</text>
+          </g>
+        `;
+      }
+
+      svg.innerHTML = html;
+    }
+
+    function renderAngleArcAndText(cx, cy, r, startAngle, endAngle, text, color, offsetX, offsetY) {
+      const xStart = cx + r * Math.cos(startAngle);
+      const yStart = cy + r * Math.sin(startAngle);
+      const xEnd = cx + r * Math.cos(endAngle);
+      const yEnd = cy + r * Math.sin(endAngle);
+      const midAngle = (startAngle + endAngle) / 2;
+      const tx = cx + (r + 16) * Math.cos(midAngle) + offsetX;
+      const ty = cy + (r + 14) * Math.sin(midAngle) + offsetY;
+
+      return `
+        <path d="M ${xStart} ${yStart} A ${r} ${r} 0 0 1 ${xEnd} ${yEnd}" fill="none" stroke="${color}" stroke-width="2" />
+        ${renderPillText(tx, ty, text, color)}
+      `;
+    }
+
+    function renderPillText(x, y, text, color) {
+      const w = 48;
+      const h = 20;
+      return `
+        <g transform="translate(${x - w / 2}, ${y - h / 2})">
+          <rect x="0" y="0" width="${w}" height="${h}" rx="4" fill="#ffffff" fill-opacity="0.92" stroke="${color}" stroke-width="1.2"/>
+          <text x="${w / 2}" y="14.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="${color}">${text}</text>
+        </g>
+      `;
+    }
+
+    // =========================================================================
+    // 5. UI Synchronization & Tab 2 Step-Synced Formula Cards
+    // =========================================================================
+    function updateAllUI() {
+      const t = I18N[state.lang];
+      const physics = computePhysicsPath();
+
+      // Header & Buttons
+      document.getElementById('ui-title').textContent = t.title;
+      document.getElementById('ui-lang-text').textContent = t.langSwitchBtn;
+      document.getElementById('ui-toggle-panel-text').textContent = state.panelCollapsed ? t.expandPanel : t.collapsePanel;
+
+      document.getElementById('ui-btn-start').textContent = t.btnStart;
+      document.getElementById('ui-btn-next').textContent = t.btnNext;
+      document.getElementById('ui-btn-show-all').textContent = t.btnShowAll;
+      document.getElementById('ui-btn-reset').textContent = t.btnReset;
+
+      document.getElementById('ui-angle-label').textContent = t.angleLabel;
+      document.getElementById('angle-display').textContent = `${state.incidentAngle}°`;
+      document.getElementById('angle-slider').value = state.incidentAngle;
+
+      document.getElementById('ui-legend-down').textContent = t.legendDown;
+      document.getElementById('ui-legend-up').textContent = t.legendUp;
+      document.getElementById('ui-legend-normal').textContent = t.legendNormal;
+
+      // Tabs & Side Panel Titles
+      document.getElementById('ui-tab-settings').textContent = t.tabSettings;
+      document.getElementById('ui-tab-formulas').textContent = t.tabFormulas;
+      document.getElementById('ui-layer-count-title').textContent = t.layerCountTitle;
+      document.getElementById('btn-layers-2').textContent = t.layerCountUnit(2);
+      document.getElementById('btn-layers-3').textContent = t.layerCountUnit(3);
+      document.getElementById('btn-layers-4').textContent = t.layerCountUnit(4);
+      document.getElementById('ui-media-select-title').textContent = t.mediaSelectTitle;
+      document.getElementById('ui-presets-title').textContent = t.presetsTitle;
+      document.getElementById('preset-1').textContent = t.preset1;
+      document.getElementById('preset-2').textContent = t.preset2;
+      document.getElementById('preset-3').textContent = t.preset3;
+
+      document.getElementById('ui-snell-title').textContent = t.snellTitle;
+      document.getElementById('ui-snell-desc').textContent = t.snellDesc;
+      document.getElementById('ui-crit-title').textContent = t.critTitle;
+      document.getElementById('ui-crit-desc').textContent = t.critDesc;
+      document.getElementById('ui-calc-list-title').textContent = t.calcListTitle;
+      document.getElementById('ui-unlock-msg').textContent = t.unlockBanner;
+
+      // Phase-dependent locking & button states
+      const isLockedRevealing = state.phase === 'revealing';
+      const isUnlocked = state.phase === 'unlocked';
+
+      document.getElementById('btn-start').disabled = (state.phase !== 'setup');
+      document.getElementById('btn-next').disabled = !isLockedRevealing;
+      document.getElementById('btn-show-all').disabled = isUnlocked;
+
+      // Incident Angle controls: enabled in 'setup' and 'unlocked', locked in 'revealing'
+      const disableAngleControls = isLockedRevealing;
+      document.getElementById('angle-slider').disabled = disableAngleControls;
+      document.getElementById('btn-angle-minus').disabled = disableAngleControls || state.incidentAngle <= 0;
+      document.getElementById('btn-angle-plus').disabled = disableAngleControls || state.incidentAngle >= 89;
+
+      // Media & Layer count controls: enabled only in 'setup' (locked during revealing & post-reveal exploration until reset)
+      const disableMediaControls = (state.phase !== 'setup');
+      [2, 3, 4].forEach(num => {
+        const b = document.getElementById(`btn-layers-${num}`);
+        b.classList.toggle('active', state.numLayers === num);
+        b.disabled = disableMediaControls;
+      });
+      ['preset-1', 'preset-2', 'preset-3'].forEach(id => {
+        document.getElementById(id).disabled = disableMediaControls;
+      });
+
+      // Status Pill & Unlock Banner
+      const pill = document.getElementById('status-pill');
+      const statusIcon = document.getElementById('status-icon');
+      const statusText = document.getElementById('status-text');
+      const unlockBanner = document.getElementById('unlock-banner');
+
+      pill.classList.remove('mode-locked', 'mode-unlocked');
+      if (state.phase === 'setup') {
+        statusIcon.textContent = '⚙️';
+        statusText.textContent = t.statusSetup;
+        unlockBanner.classList.remove('visible');
+      } else if (state.phase === 'revealing') {
+        pill.classList.add('mode-locked');
+        statusIcon.textContent = '🔒';
+        statusText.textContent = t.statusRevealing(state.revealedStep, physics.totalSteps);
+        unlockBanner.classList.remove('visible');
+      } else {
+        pill.classList.add('mode-unlocked');
+        statusIcon.textContent = '🔓';
+        statusText.textContent = t.statusUnlocked;
+        unlockBanner.classList.add('visible');
+      }
+
+      renderMediaDropdowns(disableMediaControls);
+      renderFormulaBoundaryCards(physics);
+      renderSVG(physics);
+    }
+
+    function renderMediaDropdowns(disabled) {
+      const container = document.getElementById('media-list-container');
+      const t = I18N[state.lang];
+      let html = '';
+
+      for (let i = 0; i < state.numLayers; i++) {
+        const currentMed = getMediumById(state.layerMediaIds[i]);
+        const optionsHtml = MEDIA_CATALOG.map(m => {
+          const name = state.lang === 'zh' ? m.zh : m.en;
+          const selected = m.id === currentMed.id ? 'selected' : '';
+          return `<option value="${m.id}" ${selected}>${name} (n = ${m.n.toFixed(2)})</option>`;
+        }).join('');
+
+        html += `
+          <div class="media-item">
+            <div class="media-item-label">
+              <span class="color-dot" style="background:${currentMed.badgeBg};"></span>
+              <span>${t.layerName(i + 1)}</span>
+            </div>
+            <select class="media-select" onchange="onLayerMediumChange(${i}, this.value)" ${disabled ? 'disabled' : ''}>
+              ${optionsHtml}
+            </select>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderFormulaBoundaryCards(physics) {
+      const container = document.getElementById('interface-cards-container');
+      const t = I18N[state.lang];
+      const visibleSteps = state.phase === 'setup' ? 1 : (state.phase === 'revealing' ? state.revealedStep : physics.totalSteps);
+
+      let html = '';
+      for (let i = 0; i < physics.boundaries.length; i++) {
+        const b = physics.boundaries[i];
+        const isRevealed = visibleSteps >= b.stepIndex;
+        const headerTitle = b.direction === 'up'
+          ? t.interfaceReturnTitle(b.fromLayer, b.toLayer)
+          : t.interfaceTitle(b.fromLayer, b.toLayer);
+
+        const critStr = b.critDeg !== null
+          ? `<span class="phys-sym">c</span> = arcsin(${b.n2.toFixed(2)} / ${b.n1.toFixed(2)}) = <strong>${b.critDeg.toFixed(1)}°</strong>`
+          : t.noCritAngle;
+
+        if (!isRevealed) {
+          html += `
+            <div class="interface-card">
+              <div class="interface-card-header">
+                <span>${headerTitle}</span>
+              </div>
+              <div class="interface-card-body">
+                <div class="hidden-data-badge">${t.pendingReveal}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          const badgeHtml = b.isTIR
+            ? `<span class="tir-tag">⚡ ${t.statusTIR}</span>`
+            : `<span class="refract-tag">✓ ${t.statusRefract}</span>`;
+
+          const outLabel = b.isTIR ? t.reflAngleLabel : t.refAngleLabel;
+
+          html += `
+            <div class="interface-card">
+              <div class="interface-card-header">
+                <span>${headerTitle}</span>
+                ${badgeHtml}
+              </div>
+              <div class="interface-card-body">
+                <div>• ${t.critAngleLabel}: ${critStr}</div>
+                <div>• ${t.incAngleLabel}: <strong>${b.incDeg.toFixed(1)}°</strong> &nbsp;|&nbsp; ${outLabel}: <strong>${b.outDeg.toFixed(1)}°</strong></div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      container.innerHTML = html;
+    }
+
+    // =========================================================================
+    // 6. Event Handlers & Step-by-Step Verification Flow
+    // =========================================================================
+    function handleStart() {
+      const physics = computePhysicsPath();
+      state.phase = 'revealing';
+      state.revealedStep = 1;
+      if (state.revealedStep >= physics.totalSteps) {
+        state.phase = 'unlocked';
+      }
+      updateAllUI();
+    }
+
+    function handleNextStep() {
+      const physics = computePhysicsPath();
+      if (state.phase === 'revealing') {
+        state.revealedStep++;
+        if (state.revealedStep >= physics.totalSteps) {
+          state.revealedStep = physics.totalSteps;
+          state.phase = 'unlocked';
+        }
+        updateAllUI();
+      }
+    }
+
+    function handleShowAll() {
+      const physics = computePhysicsPath();
+      state.revealedStep = physics.totalSteps;
+      state.phase = 'unlocked';
+      updateAllUI();
+    }
+
+    function handleReset() {
+      state.phase = 'setup';
+      state.revealedStep = 0;
+      updateAllUI();
+    }
+
+    function onAngleSliderChange(val) {
+      if (state.phase === 'revealing') return;
+      state.incidentAngle = Math.min(89, Math.max(0, parseInt(val, 10) || 0));
+      updateAllUI();
+    }
+
+    function adjustAngle(delta) {
+      if (state.phase === 'revealing') return;
+      const next = Math.min(89, Math.max(0, state.incidentAngle + delta));
+      state.incidentAngle = next;
+      updateAllUI();
+    }
+
+    function setLayerCount(count) {
+      if (state.phase !== 'setup') return;
+      state.numLayers = count;
+      updateAllUI();
+    }
+
+    function onLayerMediumChange(layerIdx, mediumId) {
+      if (state.phase !== 'setup') return;
+      state.layerMediaIds[layerIdx] = mediumId;
+      updateAllUI();
+    }
+
+    function applyPreset(presetId) {
+      if (state.phase !== 'setup') return;
+      if (presetId === 1) {
+        state.numLayers = 4;
+        state.layerMediaIds = ['air', 'water', 'glass', 'air'];
+        state.incidentAngle = 45;
+      } else if (presetId === 2) {
+        state.numLayers = 3;
+        state.layerMediaIds = ['glass', 'water', 'air'];
+        state.incidentAngle = 42;
+      } else if (presetId === 3) {
+        state.numLayers = 3;
+        state.layerMediaIds = ['air', 'diamond', 'water', 'air'];
+        state.incidentAngle = 60;
+      }
+      updateAllUI();
+    }
+
+    function toggleLanguage() {
+      state.lang = state.lang === 'zh' ? 'en' : 'zh';
+      document.documentElement.lang = state.lang === 'zh' ? 'zh-HK' : 'en';
+      updateAllUI();
+    }
+
+    function toggleSidePanel() {
+      state.panelCollapsed = !state.panelCollapsed;
+      const panel = document.getElementById('side-panel');
+      panel.classList.toggle('collapsed', state.panelCollapsed);
+      updateAllUI();
+    }
+
+    function switchTab(tabName) {
+      state.activeTab = tabName;
+      document.getElementById('tab-btn-settings').classList.toggle('active', tabName === 'settings');
+      document.getElementById('tab-btn-formulas').classList.toggle('active', tabName === 'formulas');
+      document.getElementById('tab-settings').classList.toggle('active', tabName === 'settings');
+      document.getElementById('tab-formulas').classList.toggle('active', tabName === 'formulas');
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateAllUI();
+    });
+  </script>
+</body>
+</html>
